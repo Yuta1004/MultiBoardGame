@@ -1,0 +1,3 @@
+# MultiBoardGame
+
+LAN内のプレイヤーとボードゲームをプレイする
