@@ -3,7 +3,7 @@ import datetime
 import tkinter as tk
 from tkinter import ttk
 
-from roomlib import Client
+from roomlib import Host, Client
 from roomlib.net.info import get_host_ipaddresses
 
 
@@ -55,7 +55,7 @@ class Starter(tk.Frame):
         self.entry_room_create.grid(row=3, column=0, padx=5, pady=5)
 
         ### 部屋作成ボタン
-        button_room_create = ttk.Button(frame_room_create)
+        button_room_create = ttk.Button(frame_room_create, command=self.create_room)
         button_room_create.configure(text="Create")
         button_room_create.grid(row=4, column=0, padx=5, pady=5, stick=tk.W+tk.E)
 
@@ -142,19 +142,42 @@ class Starter(tk.Frame):
         self.client = None
         self.rooms = {}
 
+    def create_room(self):
+        """
+        部屋を作成する
+        """
+
+       # 選択されているゲームを取得
+        selected_idx = self.available_game_list.curselection()
+        if len(selected_idx) == 0:
+            return
+        game = self.games[self.available_game_list.get(selected_idx)]
+
+        # 部屋名/パスワードチェック
+        room_name = self.entry_room_create.get()
+        password = self.entry_password.get()
+        if len(room_name) == 0 or len(password) == 0:
+            self.log("Specify the Room Name or Password")
+            return
+
+        # ポート番号取得
+        status, (port_tcp, port_udp) = self.get_port_number()
+        if not status:
+            return
+
+        # 部屋/ゲーム立ち上げ
+        self.log("Game", "Starting {}".format(self.available_game_list.get(selected_idx)))
+        self.host = Host(room_name, port_tcp, 4, password)
+        game(tk.Tk(), self.host, port_udp)
+
     def search_rooms(self):
         """
         入室可能な部屋を検索する
         """
 
         # ポート番号取得
-        port_tcp = -1
-        port_udp = -1
-        try:
-            port_tcp = int(self.entry_port_tcp.get())
-            port_udp = int(self.entry_port_udp.get())
-        except:
-            self.log("Room", "Specify the port number as a number")
+        status, (port_tcp, port_udp) = self.get_port_number()
+        if not status:
             return
 
         # Client初期化(self.client紐付け)
@@ -205,3 +228,22 @@ class Starter(tk.Frame):
         self.text_log.configure(state=tk.NORMAL)
         self.text_log.insert("1.0", view_str)
         self.text_log.configure(state=tk.DISABLED)
+
+    def  get_port_number(self):
+        """
+        入力されているポート番号をチェックしてその値を返す
+
+        ## Returns
+        - status : 正常に入力されている場合はTrue
+        - (tcp, udp) : ポート番号
+        """
+
+        port_tcp = -1
+        port_udp = -1
+        try:
+            port_tcp = int(self.entry_port_tcp.get())
+            port_udp = int(self.entry_port_udp.get())
+        except:
+            self.log("Room", "Specify the port number as a number")
+            return False, (-1, -1)
+        return True, (port_tcp, port_udp)
