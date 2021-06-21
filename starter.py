@@ -15,7 +15,6 @@ class Starter(tk.Frame):
         super().__init__(master)
         self.pack()
 
-        self.master.geometry("800x500")
         self.master.title("MultiBoardGame Starter")
         self.setup_widgets()
 
