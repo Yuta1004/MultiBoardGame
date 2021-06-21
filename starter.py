@@ -3,6 +3,7 @@ import datetime
 import tkinter as tk
 from tkinter import ttk
 
+from roomlib import Client
 from roomlib.net.info import get_host_ipaddresses
 
 
@@ -68,14 +69,10 @@ class Starter(tk.Frame):
         ### 参加可能な部屋のリスト
         ttk.Label(frame_room_join, text="Available Rooms").grid(row=0, column=0, padx=5, pady=1, stick=tk.W)
         self.available_room_list = tk.Listbox(frame_room_join, height=7)
-        self.available_room_list.insert(tk.END, "Room1 (KoiKoi)")
-        self.available_room_list.insert(tk.END, "Room2 (Sevens)")
-        self.available_room_list.insert(tk.END, "Room3 (Old Maid)")
-        self.available_room_list.select_set(0)
         self.available_room_list.grid(row=1, column=0, columnspan=1, padx=5, pady=5)
 
-        ### 部屋参加ボタン
-        button_room_join = ttk.Button(frame_room_join)
+        ### 部屋リスト更新ボタン
+        button_room_join = ttk.Button(frame_room_join, command=self.search_rooms)
         button_room_join.configure(text="Update")
         button_room_join.grid(row=2, column=0, padx=5, pady=5, stick=tk.W+tk.E)
 
@@ -137,6 +134,36 @@ class Starter(tk.Frame):
             self.text_interfaces.insert("1.0", "{}/{}\n".format(address, mask))
         self.text_interfaces.configure(state=tk.DISABLED)
         self.log("Interface", "Successfuly loaded")
+
+        # roomlib
+        self.host = None
+        self.client = None
+
+    def search_rooms(self):
+        """
+        入室可能な部屋を検索する
+        """
+
+        # ポート番号取得
+        port_tcp = -1
+        port_udp = -1
+        try:
+            port_tcp = int(self.entry_port_tcp.get())
+            port_udp = int(self.entry_port_udp.get())
+        except:
+            self.log("Room", "Specify the port number as a number")
+            return
+
+        # Client初期化(self.client紐付け)
+        self.log("Room", "Searching....")
+        self.client = Client(port_tcp) if self.client is None else self.client
+        rooms = self.client.search(2.0, port_udp)
+        self.log("Room", "Found {} rooms".format(len(rooms.keys())))
+
+        # 表示中の部屋情報全削除→更新
+        self.available_room_list.delete(0, tk.END)
+        for room_info in rooms.values():
+            self.available_room_list.insert(tk.END, room_info[2])
 
     def log(self, tag, msg):
         """
