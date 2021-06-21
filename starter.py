@@ -1,3 +1,5 @@
+import datetime
+
 import tkinter as tk
 from tkinter import ttk
 
@@ -18,6 +20,7 @@ class Starter(tk.Frame):
 
         self.master.title("MultiBoardGame Starter")
         self.setup_widgets()
+        self.log("Widget", "Successfuly initialized")
 
     def setup_widgets(self):
         """
@@ -115,6 +118,19 @@ class Starter(tk.Frame):
 
         ## ログ表示
         self.text_log = tk.Text(frame_log, width=105, height=10)
-        self.text_log.insert("1.0", "[xxxx/xx/xx xx:xx:xx] aaaaaaaaaaaaaaaaaaaaaa\n"*7)
         self.text_log.configure(state=tk.DISABLED)
         self.text_log.grid(row=0, column=0, padx=5, pady=5, stick=tk.W+tk.E)
+
+    def log(self, tag, msg):
+        """
+        ログフレームにログを新しく追加する
+
+        ## Params
+        - tag : タグ
+        - msg : ログの内容
+        """
+
+        view_str = "[{}] [{}] {}\n".format(datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S"), tag, msg)
+        self.text_log.configure(state=tk.NORMAL)
+        self.text_log.insert("1.0", view_str)
+        self.text_log.configure(state=tk.DISABLED)
