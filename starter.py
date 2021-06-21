@@ -9,12 +9,13 @@ from roomlib.net.info import get_host_ipaddresses
 
 class Starter(tk.Frame):
 
-    def __init__(self, master):
+    def __init__(self, master, games):
         """
         Starterのコンストラクタ
 
         ## Params
         - master : Tk()
+        - games : プレイ可能なゲーム一覧 (key: ゲーム名, value: クラス)
         """
 
         super().__init__(master)
@@ -25,6 +26,7 @@ class Starter(tk.Frame):
         self.setup_widgets()
         self.log("Widget", "Successfuly builded")
 
+        self.games = games;
         self.initialize()
         self.log("Widget", "Successfuly initialized")
 
@@ -44,11 +46,6 @@ class Starter(tk.Frame):
         ### 実行可能ゲームのリスト
         ttk.Label(frame_room_create, text="Games").grid(row=0, column=0, padx=5, pady=1, stick=tk.W)
         self.available_game_list = tk.Listbox(frame_room_create, height=7)
-        self.available_game_list.insert(tk.END, "Game A")
-        self.available_game_list.insert(tk.END, "Game B")
-        self.available_game_list.insert(tk.END, "Game C")
-        self.available_game_list.insert(tk.END, "Game D")
-        self.available_game_list.select_set(0)
         self.available_game_list.grid(row=1, column=0, padx=5, pady=5)
 
         ### 部屋名入力欄
@@ -134,6 +131,11 @@ class Starter(tk.Frame):
             self.text_interfaces.insert("1.0", "{}/{}\n".format(address, mask))
         self.text_interfaces.configure(state=tk.DISABLED)
         self.log("Interface", "Successfuly loaded")
+
+        # ゲーム
+        for game_name in self.games.keys():
+            self.available_game_list.insert(tk.END, game_name)
+        self.log("Game", "Found {} playable games".format(len(self.games.keys())))
 
         # roomlib
         self.host = None
