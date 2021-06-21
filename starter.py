@@ -3,6 +3,8 @@ import datetime
 import tkinter as tk
 from tkinter import ttk
 
+from roomlib.net.info import get_host_ipaddresses
+
 
 class Starter(tk.Frame):
 
@@ -16,10 +18,13 @@ class Starter(tk.Frame):
 
         super().__init__(master)
         self.configure(bg="gray92")
+        self.master.title("MultiBoardGame Starter")
         self.pack()
 
-        self.master.title("MultiBoardGame Starter")
         self.setup_widgets()
+        self.log("Widget", "Successfuly builded")
+
+        self.initialize()
         self.log("Widget", "Successfuly initialized")
 
     def setup_widgets(self):
@@ -85,8 +90,7 @@ class Starter(tk.Frame):
 
         ## インタフェース表示
         ttk.Label(frame_settings, text="Interfaces").grid(row=0, column=0, padx=5, pady=1, stick=tk.W)
-        self.text_interfaces = tk.Text(frame_settings, width=40, height=5)
-        self.text_interfaces.insert("1.0", "xxx.xxx.xxx.xxx / xxx.xxx.xxx.xxx\n"*4)
+        self.text_interfaces = tk.Text(frame_settings, width=40, height=7)
         self.text_interfaces.configure(state=tk.DISABLED)
         self.text_interfaces.grid(row=1, column=0, padx=5, pady=5)
 
@@ -120,6 +124,19 @@ class Starter(tk.Frame):
         self.text_log = tk.Text(frame_log, width=105, height=10)
         self.text_log.configure(state=tk.DISABLED)
         self.text_log.grid(row=0, column=0, padx=5, pady=5, stick=tk.W+tk.E)
+
+    def initialize(self):
+        """
+        UIやその他諸々の初期化を行う
+        """
+
+        # インタフェース
+        addresses = get_host_ipaddresses()
+        self.text_interfaces.configure(state=tk.NORMAL)
+        for (address, mask) in addresses:
+            self.text_interfaces.insert("1.0", "{}/{}\n".format(address, mask))
+        self.text_interfaces.configure(state=tk.DISABLED)
+        self.log("Interface", "Successfuly loaded")
 
     def log(self, tag, msg):
         """
