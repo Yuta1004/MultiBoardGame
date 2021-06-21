@@ -50,6 +50,26 @@ class Starter(tk.Frame):
         self.button_room_create.grid(row=2, column=0)
 
         ## 部屋"参加"フレーム
+        self.frame_room_join = ttk.LabelFrame(self, text="Join Room")
+        self.frame_room_join.grid(row=0, column=0, padx=5, pady=5, stick=tk.W+tk.E)
+
+        ### 参加可能な部屋のリスト
+        self.available_room_list = tk.Listbox(self.frame_room_join, height=6)
+        self.available_room_list.insert(tk.END, "おへや1 (こいこい)")
+        self.available_room_list.insert(tk.END, "おへや2 (7並べ)")
+        self.available_room_list.insert(tk.END, "おへや3 (ババ抜き)")
+        self.available_room_list.select_set(0)
+        self.available_room_list.grid(row=0, column=0, columnspan=2)
+
+        ### 部屋参加ボタン
+        self.button_room_join = ttk.Button(self.frame_room_join)
+        self.button_room_join.configure(text="Join")
+        self.button_room_join.grid(row=1, column=0)
+
+        ### 部屋リスト更新ボタン
+        self.button_room_update = ttk.Button(self.frame_room_join)
+        self.button_room_update.configure(text="Update")
+        self.button_room_update.grid(row=1, column=1)
 
         # 設定フレーム
 
