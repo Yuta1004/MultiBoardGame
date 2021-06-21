@@ -181,7 +181,6 @@ class Starter(tk.Frame):
             return
 
         # Client初期化(self.client紐付け)
-        self.log("Room", "Searching....")
         self.client = Client(port_tcp) if self.client is None else self.client
         orig_rooms = self.client.search(2.0, port_udp)
         self.log("Room", "Found {} rooms".format(len(orig_rooms.keys())))
