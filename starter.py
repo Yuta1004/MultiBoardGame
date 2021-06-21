@@ -107,4 +107,11 @@ class Starter(tk.Frame):
         self.entry_port_udp.grid(row=0, column=4, padx=1, pady=1)
 
         # ログフレーム
+        frame_log = ttk.LabelFrame(self, text="Log")
+        frame_log.grid(row=1, column=0, columnspan=2, padx=3, pady=3, stick=tk.W+tk.E+tk.N+tk.S)
 
+        ## ログ表示
+        self.text_log = tk.Text(frame_log, width=105, height=10)
+        self.text_log.insert("1.0", "[xxxx/xx/xx xx:xx:xx] aaaaaaaaaaaaaaaaaaaaaa\n"*7)
+        self.text_log.configure(state=tk.DISABLED)
+        self.text_log.grid(row=0, column=0, padx=5, pady=5, stick=tk.W+tk.E)
