@@ -76,8 +76,8 @@ class Starter(tk.Frame):
         button_room_join.configure(text="Update")
         button_room_join.grid(row=2, column=0, padx=5, pady=5, stick=tk.W+tk.E)
 
-        ### 部屋リスト更新ボタン
-        button_room_update = ttk.Button(frame_room_join)
+        ### 部屋入室ボタン
+        button_room_update = ttk.Button(frame_room_join, command=self.join_room)
         button_room_update.configure(text="Join")
         button_room_update.grid(row=3, column=0, padx=5, pady=5, stick=tk.W+tk.E)
 
@@ -138,6 +138,7 @@ class Starter(tk.Frame):
         # roomlib
         self.host = None
         self.client = None
+        self.rooms = {}
 
     def search_rooms(self):
         """
@@ -157,13 +158,37 @@ class Starter(tk.Frame):
         # Client初期化(self.client紐付け)
         self.log("Room", "Searching....")
         self.client = Client(port_tcp) if self.client is None else self.client
-        rooms = self.client.search(2.0, port_udp)
-        self.log("Room", "Found {} rooms".format(len(rooms.keys())))
+        orig_rooms = self.client.search(2.0, port_udp)
+        self.log("Room", "Found {} rooms".format(len(orig_rooms.keys())))
 
         # 表示中の部屋情報全削除→更新
         self.available_room_list.delete(0, tk.END)
-        for room_info in rooms.values():
+        for room_id, room_info in orig_rooms.items():
             self.available_room_list.insert(tk.END, room_info[2])
+            self.rooms[room_info[2]] = room_id
+
+    def join_room(self):
+        """
+        現在選択されている部屋に入室を試みる
+        """
+
+        # 選択されている部屋のIDを取得
+        selected_idx = self.available_room_list.curselection()
+        if len(selected_idx) == 0:
+            return
+        room_id = self.rooms[self.available_room_list.get(selected_idx)]
+
+        # パスワードチェック
+        password = self.entry_password.get()
+        if len(password) == 0:
+            self.log("Room", "Enter your password in the box")
+            return
+
+        # 入室申請
+        if self.client.join(room_id, password):
+            self.log("Room", "Successfuly entered the room")
+        else:
+            self.log("Room", "Error happened (check password)")
 
     def log(self, tag, msg):
         """
