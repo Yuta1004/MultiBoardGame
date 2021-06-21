@@ -41,7 +41,7 @@ class Starter(tk.Frame):
 
         ### 部屋名入力欄
         self.entry_room_create = ttk.Entry(self.frame_room_create)
-        self.entry_room_create.insert(0, "部屋名")
+        self.entry_room_create.insert(0, "RoomName")
         self.entry_room_create.grid(row=1, column=0)
 
         ### 部屋作成ボタン
@@ -55,9 +55,9 @@ class Starter(tk.Frame):
 
         ### 参加可能な部屋のリスト
         self.available_room_list = tk.Listbox(self.frame_room_join, height=6)
-        self.available_room_list.insert(tk.END, "おへや1 (こいこい)")
-        self.available_room_list.insert(tk.END, "おへや2 (7並べ)")
-        self.available_room_list.insert(tk.END, "おへや3 (ババ抜き)")
+        self.available_room_list.insert(tk.END, "Room1 (KoiKoi)")
+        self.available_room_list.insert(tk.END, "Room2 (Sevens)")
+        self.available_room_list.insert(tk.END, "Room3 (Old Maid)")
         self.available_room_list.select_set(0)
         self.available_room_list.grid(row=0, column=0, columnspan=2)
 
