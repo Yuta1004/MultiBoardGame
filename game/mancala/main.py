@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from game.base import GameBase
+from game.mancala.dot import Dot
 
 
 HOST = 0
@@ -15,6 +16,23 @@ class Mancala(GameBase):
     def __init__(self, master, room_mgr, port_udp):
         super().__init__(master, room_mgr, port_udp, title="Mancala", width=1100, height=600)
 
+        # 状態変数初期化
+        self.room_mgr.set_values(
+            turn=random.randint(0, 1),       ## Host=>0, Client=>1
+            board=[4, 4, 4, 0, 4, 4, 4, 0]     ## ホストの陣地の左端が0
+        )
+        self.now_gaming = False
+        self.pos_diff = 0 if self.is_host() else 4
+
+        # Dot準備
+        self.dots = []
+        for i in range(3):
+            for j in range(4):
+                self.dots.append(Dot(i))
+                self.dots.append(Dot(i+4))
+
+        self.draw()
+
     def setup_widgets(self):
         self.canvas = tk.Canvas(self, width=1100, height=600, bg="white")
         self.canvas.pack()
@@ -23,11 +41,8 @@ class Mancala(GameBase):
         # プレイヤーが揃ったらゲーム開始
         if self.is_host():
             if self.room_mgr.get_value("turn") is None and len(self.room_mgr.user_list) == 1:
-                self.room_mgr.set_values(
-                    turn=random.randint(0, 1),       ## Host=>0, Client=>1
-                    board=[4, 4, 4, 0, 4, 4, 4, 0]     ## ホストの陣地の左端が0
-                )
                 self.room_mgr.sync()
+                self.now_gaming = True
 
         self.draw()
 
@@ -39,8 +54,8 @@ class Mancala(GameBase):
         self.canvas.create_rectangle(0, 0, 1100, 600, fill="white")
 
         # フィールド
-        my_color = ["red", "blue"][0 if self.is_host() else 1]
-        oppo_color = ["red", "blue"][1 if self.is_host() else 0]
+        my_color = ["red", "blue"][self.pos_diff%3]
+        oppo_color = ["blue", "red"][self.pos_diff%3]
         for i in range(3):
             x = 225 + i*250
             self.canvas.create_rectangle(x, 50, x+150, 50+150, width=5, outline=oppo_color, fill="white")
@@ -50,13 +65,19 @@ class Mancala(GameBase):
 
         # 指示内容決定
         msg = ""
-        if (self.is_host() and self.room_mgr.get_value("turn") == HOST) or (not self.is_host() and self.room_mgr.get_value("turn") == CLIENT):
-            msg = "Your turn"
-        elif self.room_mgr.get_value("turn") is None:
+        if not self.now_gaming:
             msg = "Waiting players..."
+        elif (self.is_host() and self.room_mgr.get_value("turn") == HOST) or (not self.is_host() and self.room_mgr.get_value("turn") == CLIENT):
+            msg = "Your turn"
         else:
             msg =  "Thinking..."
 
         # 指示位置
         self.canvas.create_line(250, 330, 850, 330)
         self.canvas.create_text(550, 300, text=msg, font=("Menlo", 40))
+
+        # Dot描画
+        needs_update = True
+        for dot in self.dots:
+            dot.draw(self.canvas)
+            needs_update &= dot.needs_update()
