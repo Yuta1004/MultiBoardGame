@@ -168,7 +168,9 @@ class Starter(tk.Frame):
         # 部屋/ゲーム立ち上げ
         self.log("Game", "Starting {}".format(self.available_game_list.get(selected_idx)))
         self.host = Host(room_name, port_tcp, 4, password)
-        game(tk.Tk(), self.host, port_udp)
+        root_g = tk.Toplevel()
+        game(root_g, self.host, port_udp)
+        root_g.grab_set()
 
     def search_rooms(self):
         """
