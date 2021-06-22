@@ -35,6 +35,7 @@ class Mancala(GameBase):
 
     def setup_widgets(self):
         self.canvas = tk.Canvas(self, width=1100, height=600, bg="white")
+        self.canvas.tag_bind("myland", "<Button-1>", self.myland_clicked)
         self.canvas.pack()
 
     def update(self):
@@ -59,7 +60,7 @@ class Mancala(GameBase):
         for i in range(3):
             x = 225 + i*250
             self.canvas.create_rectangle(x, 50, x+150, 50+150, width=5, outline=oppo_color, fill="white")
-            self.canvas.create_rectangle(x, 400, x+150, 400+150, width=5, outline=my_color, fill="white", activewidth=10)
+            self.canvas.create_rectangle(x, 400, x+150, 400+150, width=5, outline=my_color, fill="white", activewidth=10, tags="myland")
         self.canvas.create_rectangle(40, 225, 50+150, 225+150, width=3, fill="white", dash=(10, 10))
         self.canvas.create_rectangle(910, 225, 910+150, 225+150, width=3, fill="white", dash=(10, 10))
 
@@ -81,3 +82,9 @@ class Mancala(GameBase):
         for dot in self.dots:
             dot.draw(self.canvas)
             needs_update &= dot.needs_update()
+
+    def myland_clicked(self, event):
+        """
+        自陣地がクリックされたとき呼ばれる
+        """
+        clicked_land_pos = int((event.x-225)/250) +self.pos_diff
