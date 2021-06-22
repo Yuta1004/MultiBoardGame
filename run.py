@@ -1,13 +1,10 @@
 import tkinter as tk
 
 from starter import Starter
-from games.fordebug.main import ForDebugGame
+from games.template.main import Template
 
 games = {
-    "Debug": ForDebugGame,
-    "KoiKoi": None,
-    "Sevens": None,
-    "OldMaid": None
+    "Empty": Template
 }
 
 starter = Starter(tk.Tk(), games)
