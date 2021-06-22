@@ -7,11 +7,11 @@ from roomlib import Host, Client
 from roomlib.net.info import get_host_ipaddresses
 
 
-class Starter(tk.Frame):
+class Launcher(tk.Frame):
 
     def __init__(self, master, games):
         """
-        Starterのコンストラクタ
+        Launcherのコンストラクタ
 
         ## Params
         - master : Tk()
@@ -19,7 +19,7 @@ class Starter(tk.Frame):
         """
         super().__init__(master)
         self.configure(bg="gray92")
-        self.master.title("MultiBoardGame Starter")
+        self.master.title("Launcher")
         self.pack()
 
         self.setup_widgets()
