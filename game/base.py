@@ -57,8 +57,17 @@ class GameBase(tk.Frame):
 
         # ユーザ待機処理(Hostとして開始した場合のみ)
         self.waiting_user = False
-        if type(self.room_mgr) is Host:
+        if self.is_host():
             threading.Thread(target=self.wait_users).start()
+
+    def is_host(self):
+        """
+        ホストとしてこのゲームに参加しているかどうかを返す
+
+        ## Returns
+        - result : 自分がホストである場合True
+        """
+        return type(self.room_mgr) is Host
 
     def wait_users(self):
         """
@@ -78,7 +87,7 @@ class GameBase(tk.Frame):
         Host/Clientからの更新通知を受け取る
         (1回ここで受け取ってからself.updateを実行する)
         """
-        if (type(self.room_mgr) == Client) and (not self.room_mgr.is_alive()):
+        if (not self.is_host()) and (not self.room_mgr.is_alive()):
             self.quit_window()
         self.update()
 
