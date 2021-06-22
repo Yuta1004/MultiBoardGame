@@ -26,6 +26,7 @@ class ForDebugGame(tk.Frame):
 
         self.port_udp = port_udp
         self.room_mgr = room_mgr
+        self.room_mgr.set_values(red="", green="", blue="")
         self.room_mgr.add_update_notice_func(self.draw)
 
         self.setup_widgets()
@@ -79,9 +80,12 @@ class ForDebugGame(tk.Frame):
         self.canvas.create_rectangle(260, 150, 340, 230, fill="blue")
 
         # UIウィジェット
-        self.entry_left.configure(text=self.room_mgr.get_value("red"))
-        self.entry_center.configure(text=self.room_mgr.get_value("green"))
-        self.entry_right.configure(text=self.room_mgr.get_value("blue"))
+        self.entry_left.delete(0, tk.END)
+        self.entry_center.delete(0, tk.END)
+        self.entry_right.delete(0, tk.END)
+        self.entry_left.insert(0, self.room_mgr.get_value("red"))
+        self.entry_center.insert(0, self.room_mgr.get_value("green"))
+        self.entry_right.insert(0, self.room_mgr.get_value("blue"))
 
     def button_pressed(self):
         """
