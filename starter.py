@@ -17,7 +17,6 @@ class Starter(tk.Frame):
         - master : Tk()
         - games : プレイ可能なゲーム一覧 (key: ゲーム名, value: クラス)
         """
-
         super().__init__(master)
         self.configure(bg="gray92")
         self.master.title("MultiBoardGame Starter")
@@ -34,7 +33,6 @@ class Starter(tk.Frame):
         """
         表示するウィジェットの配置/設定を行う
         """
-
         # 部屋フレーム
         frame_room = ttk.LabelFrame(self, text="Room")
         frame_room.grid(row=0, column=0, padx=3, pady=3, stick=tk.W+tk.E+tk.N+tk.S)
@@ -123,7 +121,6 @@ class Starter(tk.Frame):
         """
         UIやその他諸々の初期化を行う
         """
-
         # インタフェース
         addresses = get_host_ipaddresses()
         self.text_interfaces.configure(state=tk.NORMAL)
@@ -146,7 +143,6 @@ class Starter(tk.Frame):
         """
         部屋を作成する
         """
-
        # 選択されているゲームを取得
         selected_idx = self.available_game_list.curselection()
         if len(selected_idx) == 0:
@@ -177,7 +173,6 @@ class Starter(tk.Frame):
         """
         入室可能な部屋を検索する
         """
-
         # ポート番号取得
         status, (port_tcp, port_udp) = self.get_port_number()
         if not status:
@@ -198,7 +193,6 @@ class Starter(tk.Frame):
         """
         現在選択されている部屋に入室を試みる
         """
-
         # 選択されている部屋のIDを取得
         selected_idx = self.available_room_list.curselection()
         if len(selected_idx) == 0:
@@ -238,7 +232,6 @@ class Starter(tk.Frame):
         - tag : タグ
         - msg : ログの内容
         """
-
         view_str = "[{}] [{}] {}\n".format(datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S"), tag, msg)
         self.text_log.configure(state=tk.NORMAL)
         self.text_log.insert("1.0", view_str)
@@ -252,7 +245,6 @@ class Starter(tk.Frame):
         - status : 正常に入力されている場合はTrue
         - (tcp, udp) : ポート番号
         """
-
         port_tcp = -1
         port_udp = -1
         try:

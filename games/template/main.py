@@ -17,7 +17,6 @@ class Template(tk.Frame):
         - room_mgr : roomlib.Host / roomlib.Client
         - port_udp : ルームの招待を送るポート番号
         """
-
         # Tkinterの初期化
         super().__init__(master)
         self.master.geometry("600x600")
@@ -50,7 +49,6 @@ class Template(tk.Frame):
         """
         ホスト専用処理(ゲーム開始時)
         """
-
         self.waiting_user = True
         while True:
             while True:
@@ -77,6 +75,5 @@ class Template(tk.Frame):
         """
         ウィンドウを閉じるときに呼ばれる
         """
-
         self.room_mgr.quit()
         self.master.destroy()
