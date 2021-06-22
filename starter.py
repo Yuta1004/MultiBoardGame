@@ -148,7 +148,7 @@ class Starter(tk.Frame):
         if len(selected_idx) == 0:
             return
         game_name = self.available_game_list.get(selected_idx)
-        game = self.games[game_name]
+        (game, users_limit) = self.games[game_name]
 
         # 部屋名/パスワードチェック
         room_name = self.entry_room_create.get()
@@ -164,7 +164,7 @@ class Starter(tk.Frame):
 
         # 部屋/ゲーム立ち上げ
         self.log("Game", "Starting {}".format(game_name))
-        self.host = Host(room_name+" - "+game_name, port_tcp, 4, password)
+        self.host = Host(room_name+" - "+game_name, port_tcp, users_limit, password)
         root_g = tk.Toplevel()
         game(root_g, self.host, port_udp)
         root_g.grab_set()
@@ -199,6 +199,7 @@ class Starter(tk.Frame):
             return
         room_name = self.available_room_list.get(selected_idx)
         room_id = self.rooms[room_name]
+        (game, _) = self.games[room_name.split(" - ")[1]]
 
         # パスワードチェック
         password = self.entry_password.get()
@@ -221,7 +222,7 @@ class Starter(tk.Frame):
         game_name = room_name.split(" - ")[1]
         self.log("Game", "Starting {}".format(game_name))
         root_g = tk.Toplevel()
-        self.games[game_name](root_g, self.client, port_udp)
+        game(root_g, self.client, port_udp)
         root_g.grab_set()
 
     def log(self, tag, msg):
