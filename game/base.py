@@ -58,7 +58,9 @@ class GameBase(tk.Frame):
         # ユーザ待機処理(Hostとして開始した場合のみ)
         self.waiting_user = False
         if self.is_host():
-            threading.Thread(target=self.wait_users).start()
+            wait_user_thread = threading.Thread(target=self.wait_users)
+            wait_user_thread.setDaemon(True)
+            wait_user_thread.start()
 
     def is_host(self):
         """
