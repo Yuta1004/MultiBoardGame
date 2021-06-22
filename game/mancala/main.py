@@ -20,6 +20,7 @@ class Mancala(GameBase):
 
         # 状態変数初期化
         self.room_mgr.set_values(
+            winner=-1,
             now_gaming=False,
             turn=random.randint(0, 1),       ## Host=>0, Client=>1
             board=[4, 4, 4, 0, 4, 4, 4, 0]      ## ホストの陣地の左端が0
@@ -64,6 +65,10 @@ class Mancala(GameBase):
                     moving_target_nums -= 1
             self.now_viewing_board = board
 
+        # 勝敗が決まっている場合操作を不能にする
+        if self.room_mgr.get_value("winner") != -1:
+            self.canvas.tag_unbind("myland", "<Button-1>")
+
         self.draw()
 
     def draw(self):
@@ -91,6 +96,10 @@ class Mancala(GameBase):
             msg = "Your turn"
         else:
             msg =  "Thinking..."
+        if (self.is_host() and self.room_mgr.get_value("winner") == HOST) or (not self.is_host() and self.room_mgr.get_value("winner") == CLIENT):
+            msg = "You WIN!"
+        elif self.room_mgr.get_value("winner") != -1:
+            msg = "You LOSE..."
 
         # 指示位置
         self.canvas.create_line(250, 330, 850, 330)
@@ -128,6 +137,9 @@ class Mancala(GameBase):
         for _ in range(dot_nums):
             clicked_land_pos  = (clicked_land_pos+1) % 8
             board[clicked_land_pos] += 1
+
+        if board[self.pos_diff] + board[self.pos_diff+1] + board[self.pos_diff+2] == 0:
+            self.room_mgr.set_values(winner=(HOST if self.is_host() else CLIENT))
 
         # ターン進行
         self.room_mgr.set_values(
