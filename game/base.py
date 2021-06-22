@@ -38,18 +38,17 @@ class GameBase(tk.Frame):
         - room_mgr : roomlib.Host / roomlib.Client
         - port_udp : ルームの招待を送るポート番号
         """
+        # 通信関連初期化
+        self.port_udp = port_udp
+        self.room_mgr = room_mgr
+        self.room_mgr.add_update_notice_func(self.__update)
+
         # Tkinterの初期化
         super().__init__(master)
         self.master.geometry("{}x{}".format(width, height))
         self.master.title(title)
         self.master.protocol("WM_DELETE_WINDOW", self.quit_window)
         self.pack()
-
-        # 通信関連初期化
-        self.port_udp = port_udp
-        self.room_mgr = room_mgr
-        self.room_mgr.set_values()
-        self.room_mgr.add_update_notice_func(self.__update)
 
         # UI初期化
         self.setup_widgets()
