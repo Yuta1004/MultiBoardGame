@@ -53,7 +53,6 @@ class GameBase(tk.Frame):
 
         # UI初期化
         self.setup_widgets()
-        self.__update(None)
 
         # ユーザ待機処理(Hostとして開始した場合のみ)
         self.waiting_user = False
