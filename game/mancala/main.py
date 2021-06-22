@@ -1,3 +1,4 @@
+import copy
 import time
 import random
 
@@ -21,9 +22,10 @@ class Mancala(GameBase):
         self.room_mgr.set_values(
             now_gaming=False,
             turn=random.randint(0, 1),       ## Host=>0, Client=>1
-            board=[4, 4, 4, 0, 4, 4, 4, 0]     ## ホストの陣地の左端が0
+            board=[4, 4, 4, 0, 4, 4, 4, 0]      ## ホストの陣地の左端が0
         )
         self.pos_diff = 0 if self.is_host() else 4
+        self.now_viewing_board = [4, 4, 4, 0, 4, 4, 4, 0]
 
         # Dot準備
         self.dots = []
@@ -47,6 +49,21 @@ class Mancala(GameBase):
                 self.room_mgr.set_values(now_gaming=True)
                 self.room_mgr.sync()
 
+        # Dotアニメーションの準備
+        board = copy.deepcopy(self.room_mgr.get_value("board"))
+        recent_selected_pos = -1
+        for idx in range(8):
+            if self.now_viewing_board[idx] > board[idx]:
+                recent_selected_pos = idx
+                break
+        if recent_selected_pos != -1:
+            moving_target_nums = self.now_viewing_board[recent_selected_pos]
+            for dot in self.dots:
+                if dot.pos == (recent_selected_pos+self.pos_diff)%8:
+                    dot.change_pos((recent_selected_pos+self.pos_diff+moving_target_nums)%8)
+                    moving_target_nums -= 1
+            self.now_viewing_board = board
+
         self.draw()
 
     def draw(self):
@@ -54,7 +71,7 @@ class Mancala(GameBase):
         主にCanvasの描画を行う
         """
         # 背景
-        self.canvas.create_rectangle(0, 0, 1100, 600, fill="white")
+        self.canvas.delete(tk.ALL)
 
         # フィールド
         my_color = ["red", "blue"][self.pos_diff%3]
@@ -80,16 +97,20 @@ class Mancala(GameBase):
         self.canvas.create_text(550, 300, text=msg, font=("Menlo", 40))
 
         # Dot描画
-        needs_update = True
+        needs_update = False
         for dot in self.dots:
             dot.draw(self.canvas)
-            needs_update &= dot.needs_update()
+            needs_update |= dot.needs_update()
+
+        # アニメーション続行判定
+        if needs_update:
+            self.after(20, self.draw)
 
     def myland_clicked(self, event):
         """
         自陣地がクリックされたとき呼ばれる
         """
-        board = self.room_mgr.get_value("board")
+        board = copy.deepcopy(self.room_mgr.get_value("board"))
 
         # 駒の有無など，妥当性検証
         clicked_land_pos = int((event.x-225)/250)

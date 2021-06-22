@@ -27,8 +27,9 @@ class Dot:
         ## Params
         - pos : Dotの配置場所
         """
+        self.pos = pos
         (self.x, self.y) = self.calc_abs_pos()
-        (self.rx, self.ry) = (random.randint(RADIUS+10, 150-RADIUS-10), random.randint(RADIUS+10, 150-RADIUS-10))
+        (self.rx, self.ry) = (random.randint(RADIUS+20, 150-RADIUS-20), random.randint(RADIUS+20, 150-RADIUS-20))
         (self.dx, self.dy) = ((self.x-self.nx)/50, (self.y-self.ny)/50)
 
     def draw(self, canvas):
@@ -40,14 +41,15 @@ class Dot:
         """
         x = self.nx + self.rx; y = self.ny + self.ry
         canvas.create_oval(x, y, x+RADIUS*2, y+RADIUS*2, fill="brown", width=4, outline="black")
-        self.nx += self.dx
-        self.ny += self.dy
+        if self.needs_update():
+            self.nx += self.dx
+            self.ny += self.dy
 
     def needs_update(self):
         """
         まだ描画し続ける必要があるかどうかを返す (アニメーション用)
         """
-        return (self.x-self.nx) > RADIUS/2 or (self.y-self.ny) > RADIUS/2
+        return abs(self.x-self.nx) > 1 or abs(self.y-self.ny) > 1
 
     def calc_abs_pos(self):
         """
@@ -56,7 +58,7 @@ class Dot:
         if 0 <= self.pos <= 2:
             return (225 + self.pos*250, 400)
         elif 4 <= self.pos <= 6:
-            return (225 + (self.pos-4)*250, 50)
+            return (725 - (self.pos-4)*250, 50)
         elif self.pos == 3:
             return (910, 225)
         elif self.pos == 7:
