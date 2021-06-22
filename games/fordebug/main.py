@@ -19,6 +19,7 @@ class ForDebugGame(tk.Frame):
         super().__init__(master)
         self.master.geometry("400x400")
         self.master.title("For Debug Game")
+        self.master.protocol("WM_DELETE_WINDOW", self.quit_window)
         self.pack()
 
         self.port_udp = port_udp
@@ -88,3 +89,11 @@ class ForDebugGame(tk.Frame):
             blue=self.entry_right.get()
         )
         self.room_mgr.sync()
+
+    def quit_window(self):
+        """
+        ウィンドウを閉じるときに呼ばれる
+        """
+
+        self.room_mgr.quit()
+        self.master.destroy()
