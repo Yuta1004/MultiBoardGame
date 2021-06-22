@@ -1,3 +1,4 @@
+import time
 import random
 
 import tkinter as tk
@@ -18,10 +19,10 @@ class Mancala(GameBase):
 
         # 状態変数初期化
         self.room_mgr.set_values(
+            now_gaming=False,
             turn=random.randint(0, 1),       ## Host=>0, Client=>1
             board=[4, 4, 4, 0, 4, 4, 4, 0]     ## ホストの陣地の左端が0
         )
-        self.now_gaming = False
         self.pos_diff = 0 if self.is_host() else 4
 
         # Dot準備
@@ -41,9 +42,10 @@ class Mancala(GameBase):
     def update(self):
         # プレイヤーが揃ったらゲーム開始
         if self.is_host():
-            if self.room_mgr.get_value("turn") is None and len(self.room_mgr.user_list) == 1:
+            if not self.room_mgr.get_value("now_gaming") and len(self.room_mgr.user_list) == 1:
+                time.sleep(2)
+                self.room_mgr.set_values(now_gaming=True)
                 self.room_mgr.sync()
-                self.now_gaming = True
 
         self.draw()
 
@@ -66,7 +68,7 @@ class Mancala(GameBase):
 
         # 指示内容決定
         msg = ""
-        if not self.now_gaming:
+        if not self.room_mgr.get_value("now_gaming"):
             msg = "Waiting players..."
         elif (self.is_host() and self.room_mgr.get_value("turn") == HOST) or (not self.is_host() and self.room_mgr.get_value("turn") == CLIENT):
             msg = "Your turn"
