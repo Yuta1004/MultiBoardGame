@@ -89,4 +89,28 @@ class Mancala(GameBase):
         """
         自陣地がクリックされたとき呼ばれる
         """
-        clicked_land_pos = int((event.x-225)/250) +self.pos_diff
+        board = self.room_mgr.get_value("board")
+
+        # 駒の有無など，妥当性検証
+        clicked_land_pos = int((event.x-225)/250)
+        if clicked_land_pos > 2:
+            return
+        clicked_land_pos = (clicked_land_pos+self.pos_diff) % 8
+        dot_nums = board[clicked_land_pos]
+        if dot_nums <= 0:
+            return
+        if not (self.is_host() and self.room_mgr.get_value("turn") == HOST) and not (not self.is_host() and self.room_mgr.get_value("turn") == CLIENT):
+            return
+
+        # 駒の移動
+        board[clicked_land_pos] = 0
+        for _ in range(dot_nums):
+            clicked_land_pos  = (clicked_land_pos+1) % 8
+            board[clicked_land_pos] += 1
+
+        # ターン進行
+        self.room_mgr.set_values(
+            turn=(self.room_mgr.get_value("turn")+1)%2,
+            board=board
+        )
+        self.room_mgr.sync()
