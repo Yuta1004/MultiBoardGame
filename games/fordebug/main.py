@@ -29,7 +29,7 @@ class ForDebugGame(tk.Frame):
         self.room_mgr.add_update_notice_func(self.draw)
 
         self.setup_widgets()
-        self.draw()
+        self.draw(None)
 
         if type(self.room_mgr) is Host:
             threading.Thread(target=self.host_process).start()
@@ -68,7 +68,7 @@ class ForDebugGame(tk.Frame):
             if self.room_mgr.wait(1.5, self.port_udp):
                 break
 
-    def draw(self):
+    def draw(self, room_mgr):
         """
         キャンバスの更新を行う
         """
