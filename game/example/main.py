@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from games.base import GameBase
+from game.base import GameBase
 
 
 class Example(GameBase):

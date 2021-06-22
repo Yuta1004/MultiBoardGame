@@ -1,7 +1,7 @@
 import tkinter as tk
 
 from starter import Starter
-from games.example.main import Example
+from game.example.main import Example
 
 games = {
     "Example": (Example, 2)      # "ゲーム名" : (ゲーム実行可能クラス, 人数上限)
