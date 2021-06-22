@@ -20,7 +20,7 @@ class Template(tk.Frame):
         # Tkinterの初期化
         super().__init__(master)
         self.master.geometry("600x600")
-        self.master.title("Mancala")
+        self.master.title("Template")
         self.master.protocol("WM_DELETE_WINDOW", self.quit_window)
         self.pack()
 
@@ -28,7 +28,7 @@ class Template(tk.Frame):
         self.port_udp = port_udp
         self.room_mgr = room_mgr
         self.room_mgr.set_values()
-        self.room_mgr.add_update_notice_func(self.draw)
+        self.room_mgr.add_update_notice_func(self.update)
 
         # UI初期化
         self.setup_widgets()
@@ -54,7 +54,7 @@ class Template(tk.Frame):
             while True:
                 if self.room_mgr.wait(1.5, self.port_udp):
                     break
-            if len(self.room_mgr.user_list)  >= self.users_limit:
+            if len(self.room_mgr.user_list)  >= self.room_mgr.users_limit:
                 break
         self.waiting_user = False
 
@@ -63,7 +63,9 @@ class Template(tk.Frame):
         更新処理を行う
         ※変数更新時に呼ばれる
         """
-        pass
+        # 部屋存在確認
+        if (type(self.room_mgr) == Client) and (not self.room_mgr.is_alive()):
+            self.quit_window()
 
     def draw(self):
         """
