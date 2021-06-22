@@ -39,10 +39,12 @@ class Mancala(GameBase):
         self.canvas.create_rectangle(0, 0, 1100, 600, fill="white")
 
         # フィールド
+        my_color = ["red", "blue"][0 if self.is_host() else 1]
+        oppo_color = ["red", "blue"][1 if self.is_host() else 0]
         for i in range(3):
             x = 225 + i*250
-            self.canvas.create_rectangle(x, 50, x+150, 50+150, width=5, outline="blue", fill="white")
-            self.canvas.create_rectangle(x, 400, x+150, 400+150, width=5, outline="red", fill="white", activewidth=10)
+            self.canvas.create_rectangle(x, 50, x+150, 50+150, width=5, outline=oppo_color, fill="white")
+            self.canvas.create_rectangle(x, 400, x+150, 400+150, width=5, outline=my_color, fill="white", activewidth=10)
         self.canvas.create_rectangle(40, 225, 50+150, 225+150, width=3, fill="white", dash=(10, 10))
         self.canvas.create_rectangle(910, 225, 910+150, 225+150, width=3, fill="white", dash=(10, 10))
 
