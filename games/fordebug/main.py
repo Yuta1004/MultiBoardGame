@@ -1,3 +1,5 @@
+import threading
+
 import tkinter as tk
 from tkinter import ttk
 
@@ -30,7 +32,7 @@ class ForDebugGame(tk.Frame):
         self.draw()
 
         if type(self.room_mgr) is Host:
-            self.host_process()
+            threading.Thread(target=self.host_process).start()
 
     def setup_widgets(self):
         """
@@ -61,7 +63,10 @@ class ForDebugGame(tk.Frame):
         """
         ホスト専用処理(ゲーム開始時)
         """
-        pass
+
+        while True:
+            if self.room_mgr.wait(1.5, self.port_udp):
+                break
 
     def draw(self):
         """
