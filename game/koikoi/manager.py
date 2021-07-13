@@ -35,8 +35,7 @@ class KoiKoiGameManager:
         """
         needs_more_move = False
         for card in self.cards.values():
-            card.move(self.canvas)
-            needs_more_move |= card.needs_more_move()
+            needs_more_move |= card.move()
         return needs_more_move
 
     def card_click_event(self, event):

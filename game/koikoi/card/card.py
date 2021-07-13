@@ -56,13 +56,14 @@ class Card:
         self.card_num = 0
         self.card_num |= (1 << card_num)
 
+        self.canvas = canvas
         (self.x, self.y) = (-45, -60)
         (self.nx, self.ny) = (self.x, self.y)
         (self.dx, self.dy) = (0, 0)
         self.show_front = False
 
         self.load_resources()
-        self.setup_canvas(canvas)
+        self.setup_canvas()
 
     def load_resources(self):
         # 札画像(表)
@@ -80,7 +81,7 @@ class Card:
         highlight_img = highlight_img.resize((100, 130))
         self.highlight_img = ImageTk.PhotoImage(highlight_img)
 
-    def setup_canvas(self, canvas):
+    def setup_canvas(self):
         """
         キャンバスへの描画準備を行う
 
@@ -88,28 +89,23 @@ class Card:
         - canvas : キャンバス (Tkinter)
         """
         base_tag = "Card"+str(self.card_num)
-        canvas.create_image(self.nx, self.ny, image=self.highlight_img, anchor=tk.CENTER, tags=(base_tag, base_tag+"highlight"))
-        canvas.create_image(self.nx, self.ny, image=self.card_img, anchor=tk.CENTER, tags=(base_tag))
-        canvas.create_image(self.nx, self.ny, image=self.card_back_img, anchor=tk.CENTER, tags=(base_tag, base_tag+"back"))
+        self.canvas.create_image(self.nx, self.ny, image=self.highlight_img, anchor=tk.CENTER, tags=(base_tag, base_tag+"highlight"))
+        self.canvas.create_image(self.nx, self.ny, image=self.card_img, anchor=tk.CENTER, tags=(base_tag))
+        self.canvas.create_image(self.nx, self.ny, image=self.card_back_img, anchor=tk.CENTER, tags=(base_tag, base_tag+"back"))
 
-    def move(self, canvas):
+    def move(self):
         """
         札の再描画(=アニメーション)を行う
 
         ## Params
         - canvas : キャンバス(Tkinter)
+
+        ## Return
+        - needs_more_move : まだ再描画を続ける必要がある場合はTrue
         """
         self.nx += self.dx
         self.ny += self.dy
-        canvas.move("Card"+str(self.card_num), self.dx, self.dy)
-
-    def needs_more_move(self):
-        """
-        まだアニメーションを続ける必要があるかどうかを返す
-
-        ## Returns
-        - result : 必要な場合True
-        """
+        self.canvas.move("Card"+str(self.card_num), self.dx, self.dy)
         return abs(self.nx-self.x) > 0.1 or abs(self.ny-self.y) > 0.1
 
     def update_pos(self, x, y):
