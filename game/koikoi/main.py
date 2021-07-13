@@ -11,6 +11,7 @@ class KoiKoi(GameBase):
 
     def __init__(self, master, room_mgr, port_udp):
         super().__init__(master, room_mgr, port_udp, title="KoiKoi", width=1200, height=700)
+        self.msg = "Waiting..."
         self.load_resources()
         self.draw()
 
@@ -30,6 +31,11 @@ class KoiKoi(GameBase):
         back_card_img = Image.open(open("game/koikoi/resource/card/back.png", "rb"))
         back_card_img = back_card_img.resize((90, 120))
         self.back_card_img = ImageTk.PhotoImage(back_card_img)
+
+        # メッセージボックス
+        msg_box_img = Image.open(open("game/koikoi/resource/message.png", "rb"))
+        msg_box_img = msg_box_img.resize((640, 40))
+        self.msg_box_img = ImageTk.PhotoImage(msg_box_img)
 
     def setup_widgets(self):
         self.canvas = tk.Canvas(self, width=1200, height=700, bg="white")
@@ -53,3 +59,7 @@ class KoiKoi(GameBase):
 
         # 山札
         self.canvas.create_image(600, 350, image=self.back_card_img, anchor=tk.CENTER)
+
+        # メッセージウィンドウ
+        self.canvas.create_image(280, 0, image=self.msg_box_img, anchor=tk.NW)
+        self.canvas.create_text(600, 20, text=self.msg, font=("Courier", 30), anchor=tk.CENTER)
