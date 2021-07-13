@@ -26,7 +26,7 @@ class KoiKoiUIManager:
             card.set_front_visibility(False)
             card.set_highlight_visibility(False)
             self.cards[1 << card_num] = card
-            self.canvas.tag_bind("Card"+str(card_num), "<Button-1>", self.card_click_event)
+            self.canvas.tag_bind("Card"+str(1<< card_num), "<Button-1>", self.card_click_event)
 
     def replace_cards(self, on_field_cards, my_cards, oppo_cards, my_collected_cards, oppo_collected_cards):
         """
