@@ -22,7 +22,7 @@ class KoiKoiGameManager:
         """
         self.cards = {}
         for card_num in range(48):
-            card = Card(card_num, self.canvas)
+            card = Card(card_num, self.canvas, 350, 350)
             card.set_front_visibility(False)
             card.set_highlight_visibility(False)
             self.cards[card_num] = card

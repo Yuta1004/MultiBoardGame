@@ -40,13 +40,15 @@ class Card:
         |                   カス                      |20点札|    10点札   |       5点札       |
     """
 
-    def __init__(self, card_num, canvas):
+    def __init__(self, card_num, canvas, init_x, init_y):
         """
         Cardのコンストラクタ
 
         ## Params
         - card_num : カード番号 (詳細はCardクラスのdocstring)
         - canvas : キャンバス (Tkinter)
+        - init_x : 初期座標 (x成分)
+        - init_y : 初期座標 (y成分)
 
         ## Warning
         - 0未満または47を超える番号を指定した場合は47番で初期化される
@@ -57,7 +59,7 @@ class Card:
         self.card_num |= (1 << card_num)
 
         self.canvas = canvas
-        (self.x, self.y) = (-45, -60)
+        (self.x, self.y) = (init_x, init_y)
         (self.nx, self.ny) = (self.x, self.y)
         (self.dx, self.dy) = (0, 0)
 
