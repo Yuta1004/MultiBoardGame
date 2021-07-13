@@ -55,7 +55,7 @@ class KoiKoi(GameBase):
         self.canvas.create_line(920, 300, 1200, 300, width=3, fill="black")
 
         # 山札
-        self.canvas.create_image(600, 350, image=self.back_card_img, anchor=tk.CENTER)
+        self.canvas.create_image(350, 350, image=self.back_card_img, anchor=tk.CENTER)
 
         # メッセージウィンドウ
         self.canvas.create_image(280, 0, image=self.msg_box_img, anchor=tk.NW)
