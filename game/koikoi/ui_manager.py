@@ -83,6 +83,16 @@ class KoiKoiUIManager:
         else:
             self.cards[from_card_num].update_pos(*self.cards[to_card_num].get_pos())
 
+    def set_highlight_visibility_all_cards(self, visibility=True):
+        """
+        全札のハイライト効果を制御する
+
+        ## Params
+        - visibility : ハイライト効果を表示する場合True
+        """
+        for card in self.cards:
+            card.set_highlight_visibility(False)
+
     def draw(self):
         """
         札の描画の更新を行うo
