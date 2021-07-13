@@ -6,15 +6,17 @@ class KoiKoiUIManager:
     ゲームUIの管理を行う (主に札の描画)
     """
 
-    def __init__(self, canvas):
+    def __init__(self, canvas, notice_func):
         """
         KoiKoiUIManagerのコンストラクタ
 
         ## Params
         - canvas : キャンバス(tkinter)
+        - notice_func : 札選択イベントを通知する先 (card_numを引数に持つ)
         """
         self.viewing_card_nums = (0, 0, 0, 0, 0)    # 場札/自分の持札/相手の持札/自分の合札/相手の合札
         self.canvas = canvas
+        self.notice_func = notice_func
         self.setup_cards()
 
     def setup_cards(self):
@@ -117,4 +119,4 @@ class KoiKoiUIManager:
             return
         clicked_card_num = int(clicked_card_num)
 
-        self.cards[clicked_card_num].set_highlight_visibility(True)
+        self.notice_func(clicked_card_num)
