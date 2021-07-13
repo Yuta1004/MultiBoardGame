@@ -5,17 +5,26 @@ from tkinter import ttk
 from PIL import Image, ImageTk, ImageEnhance
 
 from game.base import GameBase
-from game.koikoi.manager import KoiKoiGameManager
+from game.koikoi.ui_manager import KoiKoiUIManager
 
 
 class KoiKoi(GameBase):
 
     def __init__(self, master, room_mgr, port_udp):
-        # 描画関連初期化 (メソッド呼び出しの順番を変えないこと)
+        # 親クラスの初期化 (この呼出順を変更しないこと)
         self.msg = "Waiting..."
         self.load_resources()
         super().__init__(master, room_mgr, port_udp, title="KoiKoi", width=1200, height=700)
-        self.game_manager = KoiKoiGameManager(self.canvas)
+
+        # UIセットアップ
+        self.ui_manager = KoiKoiUIManager(self.canvas)
+        self.ui_manager.replace_cards(
+            [1<<(idx+0*8) for idx in range(8)],
+            [1<<(idx+1*8) for idx in range(8)],
+            [1<<(idx+2*8) for idx in range(8)],
+            [1<<(idx+3*8) for idx in range(8)],
+            [1<<(idx+4*8) for idx in range(8)]
+        )
         self.draw()
 
     def load_resources(self):
@@ -65,6 +74,6 @@ class KoiKoi(GameBase):
         pass
 
     def draw(self):
-        needs_update = self.game_manager.draw()
+        needs_update = self.ui_manager.draw()
         if needs_update:
             self.after(20, self.draw)
