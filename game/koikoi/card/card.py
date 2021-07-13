@@ -98,10 +98,12 @@ class Card:
         ## Return
         - needs_more_move : まだ再描画を続ける必要がある場合はTrue
         """
-        self.nx += self.dx
-        self.ny += self.dy
-        self.canvas.move("Card"+str(self.card_num), self.dx, self.dy)
-        return abs(self.nx-self.x) > 0.1 or abs(self.ny-self.y) > 0.1
+        if abs(self.nx-self.x) > 0.1 or abs(self.ny-self.y) > 0.1:
+            self.nx += self.dx
+            self.ny += self.dy
+            self.canvas.move("Card"+str(self.card_num), self.dx, self.dy)
+            return True
+        return False
 
     def update_pos(self, x, y):
         """
