@@ -55,8 +55,8 @@ class Card:
         self.card_num = 0
         self.card_num |= (1 << card_num)
 
-        (self.x, self.y) = (0, 0)
-        (self.nx, self.ny) = (0, 0)
+        (self.x, self.y) = (-45, -60)
+        (self.nx, self.ny) = (self.x, self.y)
         (self.dx, self.dy) = (0, 0)
         self.show_front = False
 
