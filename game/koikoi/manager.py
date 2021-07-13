@@ -22,9 +22,11 @@ class KoiKoiGameManager:
         """
         self.cards = {}
         for card_num in range(48):
-            self.cards[card_num] = Card(card_num, self.canvas)
+            card = Card(card_num, self.canvas)
+            card.set_front_visibility(False)
+            card.set_highlight_visibility(False)
+            self.cards[card_num] = card
             self.canvas.tag_bind("Card"+str(card_num), "<Button-1>", self.card_click_event)
-        self.cards[0].update_pos(200, 400)
 
     def draw(self):
         """
