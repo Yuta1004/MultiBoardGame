@@ -13,6 +13,7 @@ class KoiKoiUIManager:
         ## Params
         - canvas : キャンバス(tkinter)
         """
+        self.viewing_card_nums = (0, 0, 0, 0, 0)    # 場札/自分の持札/相手の持札/自分の合札/相手の合札
         self.canvas = canvas
         self.setup_cards()
 
@@ -40,6 +41,8 @@ class KoiKoiUIManager:
         - my_collected_cards : 自分が所持している合札のリスト
         - oppo_collected_cards : 相手が所持している合札のリスト
         """
+        self.viewing_card_nums = (len(on_field_cards), len(my_cards), len(oppo_cards), len(my_collected_cards), len(oppo_collected_cards))
+
         # 場札
         h_size = (len(on_field_cards)+1) // 2
         for idx, card_num in enumerate(on_field_cards):
@@ -61,6 +64,24 @@ class KoiKoiUIManager:
         for idx, card_num in enumerate(oppo_collected_cards):
             self.cards[card_num].set_front_visibility(True)
             self.cards[card_num].update_pos(43+(idx%5)*50, 65+(idx//5*60))
+
+    def replace_card_tmp_move(self, from_card_num, to_card_num):
+        """
+        仮移動アニメーションを発火させる
+        ※使い所->ユーザが持札を選択したとき or 山札から札を選択するとき
+        ※これは表示を変えているだけなので，必ず後でreplace_cardを呼び出すこと
+
+        ## Param
+        - from_card_num : 移動する札の番号
+        - to_card_num : 移動する札が向かう先の札の番号 (None指定可，この場合は場の空いている場所に移動)
+        """
+        self.cards[from_card_num].set_front_visibility(True)
+        if to_card_num is None:
+            idx = self.viewing_card_nums[0]
+            h_size = (idx+1) // 2
+            self.cards[from_card_num].update_pos(470+(idx%h_size)*70, 350+(-1 if idx//h_size == 0 else 1)*60)
+        else:
+            self.cards[from_card_num].update_pos(*self.cards[to_card_num].get_pos())
 
     def draw(self):
         """
