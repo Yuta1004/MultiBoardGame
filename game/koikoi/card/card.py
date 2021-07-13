@@ -1,3 +1,7 @@
+import tkinter as tk
+from PIL import Image, ImageTk
+
+
 class Card:
     """
     カード1枚の情報をもつクラス
@@ -50,3 +54,38 @@ class Card:
             card_num = 47
         self.card_num = 0
         self.card_num |= (1 << card_num)
+
+        (self.x, self.y) = (0, 0)
+        (self.nx, self.ny) = (0, 0)
+        (self.dx, self.dy) = (0, 0)
+        self.show_front = False
+
+        self.load_resources()
+
+    def load_resources(self):
+        # 札画像(表)
+        card_img = Image.open(open("game/koikoi/resource/card/{}.png".format(1<<self.card_num), "rb"))
+        card_img = card_img.resize((90, 120))
+        self.card_img = ImageTk.PhotoImage(card_img)
+
+        # 札画像(裏)
+        card_back_img = Image.open(open("game/koikoi/resource/card/back.png", "rb"))
+        card_back_img = card_back_img.resize((90, 120))
+        self.card_back_img = ImageTk.PhotoImage(card_back_img)
+
+        # ハイライト画像
+        highlight_img = Image.open(open("game/koikoi/resource/card/highlight.png", "rb"))
+        highlight_img = highlight_img.resize((100, 130))
+        self.highlight_img = ImageTk.PhotoImage(highlight_img)
+
+    def draw(self, canvas):
+        """
+        札を描画する
+
+        ## Params
+        - canvas : キャンバス(Tkinter)
+        """
+        canvas.create_image(self.nx, self.ny, image=self.highlight_img, anchor=tk.CENTER)
+        canvas.create_image(self.nx, self.ny, image=self.card_img, anchor=tk.CENTER)
+        if not self.show_front:
+            canvas.create_image(self.nx, self.ny, image=self.card_back_img, anchor=tk.CENTER)
