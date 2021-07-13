@@ -1,3 +1,5 @@
+import time
+import copy
 import random
 
 import tkinter as tk
@@ -7,25 +9,24 @@ from PIL import Image, ImageTk, ImageEnhance
 from game.base import GameBase
 from game.koikoi.ui_manager import KoiKoiUIManager
 
+HOST = 0
+CLIENT = 1
+
 
 class KoiKoi(GameBase):
 
     def __init__(self, master, room_mgr, port_udp):
-        # 親クラスの初期化 (この呼出順を変更しないこと)
-        self.msg = "Waiting..."
+        # UI周りの初期化処理 (この呼出順を変更しないこと)
         self.load_resources()
         super().__init__(master, room_mgr, port_udp, title="KoiKoi", width=1200, height=700)
-
-        # UIセットアップ
-        self.ui_manager = KoiKoiUIManager(self.canvas)
-        self.ui_manager.replace_cards(
-            [1<<(idx+0*8) for idx in range(8)],
-            [1<<(idx+1*8) for idx in range(8)],
-            [1<<(idx+2*8) for idx in range(8)],
-            [1<<(idx+3*8) for idx in range(8)],
-            [1<<(idx+4*8) for idx in range(8)]
-        )
+        self.ui_manager = KoiKoiUIManager(self.canvas, self.card_clicked_event)
         self.draw()
+
+        # 状態変数初期化
+        self.room_mgr.set_values(
+            now_playing=False,
+            turn=random.randint(0, 1)       # Host=>0, Client=>1
+        )
 
     def load_resources(self):
         # 背景
@@ -68,12 +69,48 @@ class KoiKoi(GameBase):
 
         # メッセージウィンドウ
         self.canvas.create_image(280, 0, image=self.msg_box_img, anchor=tk.NW)
-        self.canvas.create_text(600, 20, text=self.msg, font=("Courier", 30), anchor=tk.CENTER)
+        self.canvas.create_text(600, 20, text="", font=("Courier", 30), anchor=tk.CENTER, tags="msg_box")
 
     def update(self):
-        pass
+        # ゲーム開始処理
+        if self.is_host():
+            if not self.room_mgr.get_value("now_playing") and len(self.room_mgr.user_list) == 1:
+                time.sleep(2)
+                cards = [1 << idx for idx in range(48)]
+                random.shuffle(cards)
+                host_cards = cards[0:8]
+                client_cards = cards[8:16]
+                on_field_cards = cards[16:24]
+                remain_cards = cards[24:]
+                self.room_mgr.set_values(now_playing=True, on_field_cards=on_field_cards, host_cards=host_cards, client_cards=client_cards, host_collected_cards=[], client_collected_cards=[], remain_cards=remain_cards)
+                self.room_mgr.sync()
+
+        # 盤面同期
+        self.ui_manager.replace_cards(
+            self.room_mgr.get_value("on_field_cards"),
+            self.room_mgr.get_value("host_cards" if self.is_host() else "client_cards"),
+            self.room_mgr.get_value("client_cards" if self.is_host() else "host_cards"),
+            self.room_mgr.get_value("host_collected_cards" if self.is_host() else "client_collected_cards"),
+            self.room_mgr.get_value("client_collected_cards" if self.is_host() else "host_collected_cards")
+        )
+        self.draw()
 
     def draw(self):
+        # メッセージウィンドウ
+        msg = ""
+        if self.room_mgr.get_value("now_playing"):
+            if (self.room_mgr.get_value("turn") == HOST and self.is_host()) or (self.room_mgr.get_value("turn") == CLIENT and not self.is_host()):
+                msg = "Your Turn"
+            else:
+                msg = "Thinking..."
+        else:
+            msg = "Player Waiting..."
+        self.canvas.itemconfig("msg_box", text=msg)
+
+        # 札
         needs_update = self.ui_manager.draw()
         if needs_update:
             self.after(20, self.draw)
+
+    def card_clicked_event(self, clicked_card_num):
+        print(clicked_card_num)
