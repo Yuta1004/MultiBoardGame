@@ -116,6 +116,15 @@ class Card:
         self.dx = (self.x - self.nx) / 30
         self.dy = (self.y - self.ny) / 30
 
+    def get_pos(self):
+        """
+        現在表示されている位置を返す
+
+        ## Returns
+        - (x, y) : 座標のx成分とy成分のタプル
+        """
+        return (self.x, self.y)
+
     def set_front_visibility(self, visibility=True):
         """
         札の表を表示するかどうかを制御する
