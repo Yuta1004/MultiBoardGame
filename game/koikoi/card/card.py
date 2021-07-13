@@ -60,7 +60,6 @@ class Card:
         (self.x, self.y) = (-45, -60)
         (self.nx, self.ny) = (self.x, self.y)
         (self.dx, self.dy) = (0, 0)
-        self.show_front = False
 
         self.load_resources()
         self.setup_canvas()
@@ -120,3 +119,12 @@ class Card:
         self.y = y
         self.dx = (self.x - self.nx) / 30
         self.dy = (self.y - self.ny) / 30
+
+    def set_front_visibility(self, visibility=True):
+        """
+        札の表を表示するかどうかを制御する
+
+        ## Params
+        - visibility : 表を表示する場合True
+        """
+        self.canvas.itemconfigure("Card"+str(self.card_num)+"back", state=tk.HIDDEN if visibility else tk.NORMAL)
