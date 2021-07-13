@@ -49,14 +49,8 @@ class Card:
         - canvas : キャンバス (Tkinter)
         - init_x : 初期座標 (x成分)
         - init_y : 初期座標 (y成分)
-
-        ## Warning
-        - 0未満または47を超える番号を指定した場合は47番で初期化される
         """
-        if card_num < 0 or 47 < card_num:
-            card_num = 47
-        self.card_num = 0
-        self.card_num |= (1 << card_num)
+        self.card_num = card_num
 
         self.canvas = canvas
         (self.x, self.y) = (init_x, init_y)
