@@ -85,7 +85,31 @@ class Card:
         ## Params
         - canvas : キャンバス(Tkinter)
         """
+        self.nx += self.dx
+        self.ny += self.dy
         canvas.create_image(self.nx, self.ny, image=self.highlight_img, anchor=tk.CENTER)
         canvas.create_image(self.nx, self.ny, image=self.card_img, anchor=tk.CENTER)
         if not self.show_front:
             canvas.create_image(self.nx, self.ny, image=self.card_back_img, anchor=tk.CENTER)
+
+    def needs_redraw(self):
+        """
+        再描画の必要があるかどうかを返す
+
+        ## Returns
+        - result : 再描画が必要な場合True
+        """
+        return abs(self.nx-self.x) > 0.1 or abs(self.ny-self.y) > 0.1
+
+    def update_pos(self, x, y):
+        """
+        札の位置を更新する
+
+        ## Params
+        - x : 更新後の位置 (x成分)
+        - y : 更新後の位置 (y成分)
+        """
+        self.x = x
+        self.y = y
+        self.dx = self.x - self.nx
+        self.dy = self.y - self.ny
