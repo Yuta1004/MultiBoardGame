@@ -40,12 +40,13 @@ class Card:
         |                   カス                      |20点札|    10点札   |       5点札       |
     """
 
-    def __init__(self, card_num):
+    def __init__(self, card_num, canvas):
         """
         Cardのコンストラクタ
 
         ## Params
         - card_num : カード番号 (詳細はCardクラスのdocstring)
+        - canvas : キャンバス (Tkinter)
 
         ## Warning
         - 0未満または47を超える番号を指定した場合は47番で初期化される
@@ -61,10 +62,11 @@ class Card:
         self.show_front = False
 
         self.load_resources()
+        self.setup_canvas(canvas)
 
     def load_resources(self):
         # 札画像(表)
-        card_img = Image.open(open("game/koikoi/resource/card/{}.png".format(1<<self.card_num), "rb"))
+        card_img = Image.open(open("game/koikoi/resource/card/{}.png".format(self.card_num), "rb"))
         card_img = card_img.resize((90, 120))
         self.card_img = ImageTk.PhotoImage(card_img)
 
@@ -78,26 +80,35 @@ class Card:
         highlight_img = highlight_img.resize((100, 130))
         self.highlight_img = ImageTk.PhotoImage(highlight_img)
 
-    def draw(self, canvas):
+    def setup_canvas(self, canvas):
         """
-        札を描画する
+        キャンバスへの描画準備を行う
+
+        ## Params
+        - canvas : キャンバス (Tkinter)
+        """
+        base_tag = "Card"+str(self.card_num)
+        canvas.create_image(self.nx, self.ny, image=self.highlight_img, anchor=tk.CENTER, tags=(base_tag, base_tag+"highlight"))
+        canvas.create_image(self.nx, self.ny, image=self.card_img, anchor=tk.CENTER, tags=(base_tag))
+        canvas.create_image(self.nx, self.ny, image=self.card_back_img, anchor=tk.CENTER, tags=(base_tag, base_tag+"back"))
+
+    def move(self, canvas):
+        """
+        札の再描画(=アニメーション)を行う
 
         ## Params
         - canvas : キャンバス(Tkinter)
         """
         self.nx += self.dx
         self.ny += self.dy
-        canvas.create_image(self.nx, self.ny, image=self.highlight_img, anchor=tk.CENTER)
-        canvas.create_image(self.nx, self.ny, image=self.card_img, anchor=tk.CENTER)
-        if not self.show_front:
-            canvas.create_image(self.nx, self.ny, image=self.card_back_img, anchor=tk.CENTER)
+        canvas.move("Card"+str(self.card_num), self.dx, self.dy)
 
-    def needs_redraw(self):
+    def needs_more_move(self):
         """
-        再描画の必要があるかどうかを返す
+        まだアニメーションを続ける必要があるかどうかを返す
 
         ## Returns
-        - result : 再描画が必要な場合True
+        - result : 必要な場合True
         """
         return abs(self.nx-self.x) > 0.1 or abs(self.ny-self.y) > 0.1
 
@@ -111,5 +122,5 @@ class Card:
         """
         self.x = x
         self.y = y
-        self.dx = self.x - self.nx
-        self.dy = self.y - self.ny
+        self.dx = (self.x - self.nx) / 30
+        self.dy = (self.y - self.ny) / 30

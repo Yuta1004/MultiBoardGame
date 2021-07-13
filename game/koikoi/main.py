@@ -5,14 +5,17 @@ from tkinter import ttk
 from PIL import Image, ImageTk, ImageEnhance
 
 from game.base import GameBase
+from game.koikoi.manager import KoiKoiGameManager
 
 
 class KoiKoi(GameBase):
 
     def __init__(self, master, room_mgr, port_udp):
-        super().__init__(master, room_mgr, port_udp, title="KoiKoi", width=1200, height=700)
+        # 描画関連初期化 (メソッド呼び出しの順番を変えないこと)
         self.msg = "Waiting..."
         self.load_resources()
+        super().__init__(master, room_mgr, port_udp, title="KoiKoi", width=1200, height=700)
+        self.game_manager = KoiKoiGameManager(self.canvas)
         self.draw()
 
     def load_resources(self):
@@ -38,15 +41,9 @@ class KoiKoi(GameBase):
         self.msg_box_img = ImageTk.PhotoImage(msg_box_img)
 
     def setup_widgets(self):
+        # キャンバス初期化
         self.canvas = tk.Canvas(self, width=1200, height=700, bg="white")
         self.canvas.pack()
-
-    def update(self):
-        pass
-
-    def draw(self):
-        # リセット
-        self.canvas.delete(tk.ALL)
 
         # 背景画像
         self.canvas.create_image(0, 0, image=self.bg_img, anchor=tk.NW)
@@ -63,3 +60,11 @@ class KoiKoi(GameBase):
         # メッセージウィンドウ
         self.canvas.create_image(280, 0, image=self.msg_box_img, anchor=tk.NW)
         self.canvas.create_text(600, 20, text=self.msg, font=("Courier", 30), anchor=tk.CENTER)
+
+    def update(self):
+        pass
+
+    def draw(self):
+        needs_update = self.game_manager.draw()
+        if needs_update:
+            self.after(20, self.draw)
