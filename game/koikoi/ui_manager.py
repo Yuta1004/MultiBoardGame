@@ -75,4 +75,15 @@ class KoiKoiUIManager:
         return needs_more_move
 
     def card_click_event(self, event):
-        print(event)
+        # クリック位置を基に実際にクリックされた札の番号を求める(重なりなどの影響でいくつか候補が存在する場合がある)
+        clicked_card_num = None
+        cx, cy = self.canvas.canvasx(event.x), self.canvas.canvasy(event.y)
+        for clicked_candidate_obj in self.canvas.find_overlapping(cx, cy, cx, cy):
+            tags = self.canvas.itemcget(clicked_candidate_obj, 'tags')
+            if "current" in tags:
+                clicked_card_num = tags.split(" ")[0].replace("Card", "")
+        if clicked_card_num is None:
+            return
+        clicked_card_num = int(clicked_card_num)
+
+        self.cards[clicked_card_num].set_highlight_visibility(True)
