@@ -41,7 +41,7 @@ class KoiKoi(GameBase):
 
         # 札(裏)
         back_card_img = Image.open(open("game/koikoi/resource/card/back.png", "rb"))
-        back_card_img = back_card_img.resize((90, 120))
+        back_card_img = back_card_img.resize((65, 105))
         self.back_card_img = ImageTk.PhotoImage(back_card_img)
 
         # メッセージボックス

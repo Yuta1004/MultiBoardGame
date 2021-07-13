@@ -63,17 +63,17 @@ class Card:
     def load_resources(self):
         # 札画像(表)
         card_img = Image.open(open("game/koikoi/resource/card/{}.png".format(self.card_num), "rb"))
-        card_img = card_img.resize((90, 120))
+        card_img = card_img.resize((65, 105))
         self.card_img = ImageTk.PhotoImage(card_img)
 
         # 札画像(裏)
         card_back_img = Image.open(open("game/koikoi/resource/card/back.png", "rb"))
-        card_back_img = card_back_img.resize((90, 120))
+        card_back_img = card_back_img.resize((65, 105))
         self.card_back_img = ImageTk.PhotoImage(card_back_img)
 
         # ハイライト画像
         highlight_img = Image.open(open("game/koikoi/resource/card/highlight.png", "rb"))
-        highlight_img = highlight_img.resize((100, 130))
+        highlight_img = highlight_img.resize((75, 115))
         self.highlight_img = ImageTk.PhotoImage(highlight_img)
 
     def setup_canvas(self):
