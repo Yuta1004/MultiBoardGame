@@ -128,3 +128,12 @@ class Card:
         - visibility : 表を表示する場合True
         """
         self.canvas.itemconfigure("Card"+str(self.card_num)+"back", state=tk.HIDDEN if visibility else tk.NORMAL)
+
+    def set_highlight_visibility(self, visibility=True):
+        """
+        札のハイライト効果を表示するかを制御する
+
+        ## Params
+        - visibility : ハイライト効果を表示する場合True
+        """
+        self.canvas.itemconfigure("Card"+str(self.card_num)+"highlight", state=tk.NORMAL if visibility else tk.HIDDEN)
