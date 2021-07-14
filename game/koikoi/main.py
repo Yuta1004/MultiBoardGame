@@ -140,15 +140,23 @@ class KoiKoi(GameBase):
                     cnt += 1
                     self.ui_manager.cards[on_field_card].set_highlight_visibility(True)
             if cnt == 0:
-                my_cards.remove(clicked_card_num)
-                on_field_cards.append(clicked_card_num)
+                my_cards.remove(self.bef_clicked_card_num)
+                on_field_cards.remove(clicked_card_num)
+                my_collected_cards.extend([self.bef_clicked_card_num, clicked_card_num])
                 self.ui_manager.replace_card_tmp_move(clicked_card_num, None)
                 self.phase = Phase.PICK_FROM_DECK
             else:
                 self.bef_clicked_card_num = clicked_card_num
                 self.phase = Phase.SELECT_FIELD_CARD_1
 
+        # 2. 場にある札のうち，1で選択した札と合札にする札を選択する
         elif self.phase == Phase.SELECT_FIELD_CARD_1:
+            if (clicked_card_num not in on_field_cards) or (clicked_card_month != get_card_month(self.bef_clicked_card_num)):
+                return
+            my_cards.remove(self.bef_clicked_card_num)
+            on_field_cards.remove(clicked_card_num)
+            my_collected_cards.extend([self.bef_clicked_card_num, clicked_card_num])
+            self.ui_manager.replace_card_tmp_move(self.bef_clicked_card_num, clicked_card_num)
             self.phase = Phase.PICK_FROM_DECK
 
         elif self.phase == Phase.PICK_FROM_DECK:
