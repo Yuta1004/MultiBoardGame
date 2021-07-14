@@ -195,12 +195,15 @@ class KoiKoi(GameBase):
             self.after(1500, lambda: self.card_clicked_event(1<<49))
 
         elif self.phase == Phase.CALC_SCORE:
-            # self.phase = Phase.ASK_CONTINUE
-            pass
+            self.phase = Phase.ASK_CONTINUE
 
         elif self.phase == Phase.ASK_CONTINUE:
             self.phase = Phase.WAITING
             self.room_mgr.set_values(turn=1-self.room_mgr.get_value("turn"))
             self.room_mgr.sync()
 
+        if self.is_host():
+            self.room_mgr.set_values(on_field_cards=on_field_cards, host_cards=my_cards, host_collected_cards=my_collected_cards, remain_cards=remain_cards)
+        else:
+            self.room_mgr.set_values(on_field_cards=on_field_cards, client_cards=my_cards, client_collected_cards=my_collected_cards, remain_cards=remain_cards)
         self.draw()
