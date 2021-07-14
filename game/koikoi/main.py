@@ -103,10 +103,7 @@ class KoiKoi(GameBase):
         self.canvas.create_image(30, 550, image=self.challenge_btn_img, anchor=tk.NW)
 
         # 出来役表示リスト
-        self.roles_listbox = tk.Listbox(self, width=15, height=10, font=("Courier", 24))
-        self.roles_listbox.insert(tk.END, "aaa")
-        self.roles_listbox.insert(tk.END, "aaa")
-        self.roles_listbox.insert(tk.END, "aaa")
+        self.roles_listbox = tk.Listbox(self, width=18, height=12, font=("Courier", 20))
         self.roles_listbox.place(x=1060, y=150, anchor=tk.CENTER)
 
     def update(self):
@@ -221,7 +218,10 @@ class KoiKoi(GameBase):
             collected_card_info = 0
             for card in my_collected_cards:
                 collected_card_info |= card
-            print(calc_score(collected_card_info))
+            _, roles = calc_score(collected_card_info)
+            self.roles_listbox.delete(0, tk.END)
+            for (role, point) in roles:
+                self.roles_listbox.insert(tk.END, "{} : {}P".format(role.name, point))
             self.phase = Phase.ASK_CONTINUE
 
         elif self.phase == Phase.ASK_CONTINUE:
