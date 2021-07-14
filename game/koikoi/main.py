@@ -1,6 +1,7 @@
 import time
 import copy
 import random
+from enum import Enum
 
 import tkinter as tk
 from tkinter import ttk
@@ -11,17 +12,21 @@ from game.koikoi.ui_manager import KoiKoiUIManager
 
 HOST = 0
 CLIENT = 1
-PH0_WAITING = 0
-PH1_SELECT_MY_CARD = 1
-PH2_PICK_FROM_DECK = 2
-PH3_CALC_SCORE = 3
-PH4_ASK_CONTINUE = 4
+
+
+class Phase(Enum):
+    WAITING = "Please wait..."
+    SELECT_MY_CARD = "Select your card"
+    PICK_FROM_DECK = "Picked a card from deck"
+    CALC_SCORE = "Calculated your score"
+    ASK_CONTINUE = "Select your action!!"
 
 
 class KoiKoi(GameBase):
 
     def __init__(self, master, room_mgr, port_udp):
         # UI周りの初期化処理 (この呼出順を変更しないこと)
+        self.phase = Phase.WAITING
         self.load_resources()
         super().__init__(master, room_mgr, port_udp, title="KoiKoi", width=1200, height=700)
         self.ui_manager = KoiKoiUIManager(self.canvas, self.card_clicked_event)
@@ -32,7 +37,6 @@ class KoiKoi(GameBase):
             now_playing=False,
             turn=random.randint(0, 1)       # Host=>0, Client=>1
         )
-        self.phase = PH0_WAITING
 
     def load_resources(self):
         # 背景
@@ -93,8 +97,8 @@ class KoiKoi(GameBase):
 
         # ターン交代
         if (self.room_mgr.get_value("turn") == HOST and self.is_host()) or (self.room_mgr.get_value("turn") == CLIENT and not self.is_host()):
-            if self.phase == PH0_WAITING:
-                self.phase = PH1_SELECT_MY_CARD
+            if self.phase == Phase.WAITING:
+                self.phase = Phase.SELECT_MY_CARD
 
         # 盤面同期
         self.ui_manager.replace_cards(
@@ -107,44 +111,26 @@ class KoiKoi(GameBase):
         self.draw()
 
     def draw(self):
-        # メッセージウィンドウ
-        msg = ""
-        if self.room_mgr.get_value("now_playing"):
-            if (self.room_mgr.get_value("turn") == HOST and self.is_host()) or (self.room_mgr.get_value("turn") == CLIENT and not self.is_host()):
-                if self.phase == PH1_SELECT_MY_CARD:
-                    msg = "Select your card"
-                elif self.phase == PH2_PICK_FROM_DECK:
-                    msg = "Picked a card from deck"
-                elif self.phase == PH3_CALC_SCORE:
-                    msg = "Calculated your score"
-                elif self.phase == PH4_ASK_CONTINUE:
-                    msg = "Choose your action!"
-            else:
-                msg = "Please wait..."
-        else:
-            msg = "Player Waiting..."
-        self.canvas.itemconfig("msg_box", text=msg)
-
-        # 札
+        self.canvas.itemconfig("msg_box", text=self.phase.value)
         needs_update = self.ui_manager.draw()
         if needs_update:
             self.after(20, self.draw)
 
     def card_clicked_event(self, clicked_card_num):
-        if self.phase == PH0_WAITING:
+        if self.phase == Phase.WAITING:
             return
 
-        if self.phase == PH1_SELECT_MY_CARD:
-            self.phase = PH2_PICK_FROM_DECK
+        if self.phase == Phase.SELECT_MY_CARD:
+            self.phase = Phase.PICK_FROM_DECK
 
-        elif self.phase == PH2_PICK_FROM_DECK:
-            self.phase = PH3_CALC_SCORE
+        elif self.phase == Phase.PICK_FROM_DECK:
+            self.phase = Phase.CALC_SCORE
 
-        elif self.phase == PH3_CALC_SCORE:
-            self.phase = PH4_ASK_CONTINUE
+        elif self.phase == Phase.CALC_SCORE:
+            self.phase = Phase.ASK_CONTINUE
 
-        elif self.phase == PH4_ASK_CONTINUE:
-            self.phase = PH0_WAITING
+        elif self.phase == Phase.ASK_CONTINUE:
+            self.phase = Phase.WAITING
             self.room_mgr.set_values(turn=1-self.room_mgr.get_value("turn"))
             self.room_mgr.sync()
 
