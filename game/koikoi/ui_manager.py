@@ -49,7 +49,7 @@ class KoiKoiUIManager:
         h_size = (len(on_field_cards)+1) // 2
         for idx, card_num in enumerate(on_field_cards):
             self.cards[card_num].set_front_visibility(True)
-            self.cards[card_num].update_pos(470+(idx%h_size)*70, 350+(-1 if idx//h_size == 0 else 1)*60)
+            self.cards[card_num].update_pos(470+(idx%h_size)*80, 350+(-1 if idx//h_size == 0 else 1)*65)
 
         # 自分の持札
         for idx, (my_card_num, oppo_card_num) in enumerate(zip(my_cards, oppo_cards)):
@@ -85,7 +85,7 @@ class KoiKoiUIManager:
             self.cards[from_card_num].update_pos(470+(idx%h_size)*70, 350+(-1 if idx//h_size == 0 else 1)*60)
         else:
             (x, y) = self.cards[to_card_num].get_pos()
-            self.cards[from_card_num].update_pos(x+5, y+5)
+            self.cards[from_card_num].update_pos(x+10, y+8)
 
     def set_highlight_visibility_all_cards(self, visibility=True):
         """
