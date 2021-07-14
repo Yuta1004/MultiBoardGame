@@ -102,6 +102,13 @@ class KoiKoi(GameBase):
         self.canvas.create_image(30, 450, image=self.koikoi_btn_img, anchor=tk.NW)
         self.canvas.create_image(30, 550, image=self.challenge_btn_img, anchor=tk.NW)
 
+        # 出来役表示リスト
+        self.roles_listbox = tk.Listbox(self, width=15, height=10, font=("Courier", 24))
+        self.roles_listbox.insert(tk.END, "aaa")
+        self.roles_listbox.insert(tk.END, "aaa")
+        self.roles_listbox.insert(tk.END, "aaa")
+        self.roles_listbox.place(x=1060, y=150, anchor=tk.CENTER)
+
     def update(self):
         # ゲーム開始処理
         if self.is_host():
