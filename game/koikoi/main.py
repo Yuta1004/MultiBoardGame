@@ -9,6 +9,7 @@ from PIL import Image, ImageTk, ImageEnhance
 
 from game.base import GameBase
 from game.koikoi.ui_manager import KoiKoiUIManager
+from game.koikoi.card.judge import get_card_month
 
 HOST = 0
 CLIENT = 1
@@ -17,6 +18,7 @@ CLIENT = 1
 class Phase(Enum):
     WAITING = "Please wait..."
     SELECT_MY_CARD = "Select your card"
+    SELECT_FIELD_CARD_1 = "Select a card which is on field"
     PICK_FROM_DECK = "Picked a card from deck"
     CALC_SCORE = "Calculated your score"
     ASK_CONTINUE = "Select your action!!"
@@ -37,6 +39,8 @@ class KoiKoi(GameBase):
             now_playing=False,
             turn=random.randint(0, 1)       # Host=>0, Client=>1
         )
+        self.my_cards_tag = "host_cards" if self.is_host() else "client_cards"
+        self.my_collected_cards_tag = "host_collected_cards" if self.is_host() else "client_collected_cards"
 
     def load_resources(self):
         # 背景
@@ -120,7 +124,29 @@ class KoiKoi(GameBase):
         if self.phase == Phase.WAITING:
             return
 
+        clicked_card_month = get_card_month(clicked_card_num)
+        my_cards = copy.deepcopy(self.room_mgr.get_value(self.my_cards_tag))
+        my_collected_cards = copy.deepcopy(self.room_mgr.get_value(self.my_collected_cards_tag))
+        on_field_cards = copy.deepcopy(self.room_mgr.get_value("on_field_cards"))
+
+        # 1. 持札から1枚選択する - > 2または3に分岐
         if self.phase == Phase.SELECT_MY_CARD:
+            if clicked_card_num not in my_cards:
+                return
+            cnt = 0
+            for on_field_card in on_field_cards:
+                if get_card_month(on_field_card) == clicked_card_month:
+                    cnt += 1
+                    self.ui_manager.cards[on_field_card].set_highlight_visibility(True)
+            if cnt == 0:
+                my_cards.remove(clicked_card_num)
+                on_field_cards.append(clicked_card_num)
+                self.ui_manager.replace_card_tmp_move(clicked_card_num, None)
+                self.phase = Phase.PICK_FROM_DECK
+            else:
+                self.phase = Phase.SELECT_FIELD_CARD_1
+
+        elif self.phase == Phase.SELECT_FIELD_CARD_1:
             self.phase = Phase.PICK_FROM_DECK
 
         elif self.phase == Phase.PICK_FROM_DECK:
