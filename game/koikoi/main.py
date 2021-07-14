@@ -157,6 +157,7 @@ class KoiKoi(GameBase):
             on_field_cards.remove(clicked_card_num)
             my_collected_cards.extend([self.bef_clicked_card_num, clicked_card_num])
             self.ui_manager.replace_card_tmp_move(self.bef_clicked_card_num, clicked_card_num)
+            self.ui_manager.set_highlight_visibility_all_cards(False)
             self.phase = Phase.PICK_FROM_DECK
 
         elif self.phase == Phase.PICK_FROM_DECK:
