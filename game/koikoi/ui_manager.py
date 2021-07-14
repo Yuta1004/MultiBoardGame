@@ -60,12 +60,12 @@ class KoiKoiUIManager:
         # 自分の合札
         for idx, card_num in enumerate(my_collected_cards):
             self.cards[card_num].set_front_visibility(True)
-            self.cards[card_num].update_pos(960+(idx%5)*50, 630-(idx//5)*60)
+            self.cards[card_num].update_pos(960+(idx%5)*50, 630-(idx//5)*80)
 
         # 相手の合札
         for idx, card_num in enumerate(oppo_collected_cards):
             self.cards[card_num].set_front_visibility(True)
-            self.cards[card_num].update_pos(43+(idx%5)*50, 65+(idx//5*60))
+            self.cards[card_num].update_pos(43+(idx%5)*50, 65+(idx//5*80))
 
     def replace_card_tmp_move(self, from_card_num, to_card_num):
         """
