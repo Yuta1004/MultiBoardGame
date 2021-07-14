@@ -14,7 +14,6 @@ class KoiKoiUIManager:
         - canvas : キャンバス(tkinter)
         - notice_func : 札選択イベントを通知する先 (card_numを引数に持つ)
         """
-        self.viewing_card_nums = (0, 0, 0, 0, 0)    # 場札/自分の持札/相手の持札/自分の合札/相手の合札
         self.canvas = canvas
         self.notice_func = notice_func
         self.setup_cards()
@@ -43,7 +42,8 @@ class KoiKoiUIManager:
         - my_collected_cards : 自分が所持している合札のリスト
         - oppo_collected_cards : 相手が所持している合札のリスト
         """
-        self.viewing_card_nums = (len(on_field_cards), len(my_cards), len(oppo_cards), len(my_collected_cards), len(oppo_collected_cards))
+        # 場札アニメーション用に保持
+        self.on_field_cards = [(card_num, None) for card_num in on_field_cards]
 
         # 場札
         h_size = (len(on_field_cards)+1) // 2
@@ -79,12 +79,20 @@ class KoiKoiUIManager:
         """
         self.cards[from_card_num].set_front_visibility(True)
         if to_card_num is None:
-            idx = self.viewing_card_nums[0] + 1
-            h_size = (idx+1) // 2
-            self.cards[from_card_num].update_pos(470+(idx%h_size)*80, 350+(-1 if idx//h_size == 0 else 1)*65)
+            self.on_field_cards.append((from_card_num, None))
+            h_size = (len(self.on_field_cards)+1) // 2
+            for idx, card_num in enumerate(self.on_field_cards):
+                self.cards[card_num[0]].set_front_visibility(True)
+                self.cards[card_num[0]].update_pos(470+(idx%h_size)*80, 350+(-1 if idx//h_size == 0 else 1)*65)
+                if card_num[1] is not None:     # 重なっていた場合
+                    self.cards[card_num[1]].set_front_visibility(True)
+                    self.cards[card_num[1]].update_pos(470+(idx%h_size)*80+10, 350+(-1 if idx//h_size == 0 else 1)*65+8)
         else:
             (x, y) = self.cards[to_card_num].get_pos()
             self.cards[from_card_num].update_pos(x+10, y+8)
+            for idx, card_num in enumerate(self.on_field_cards):    # 重なりを反映させる
+                if card_num[0] == to_card_num:
+                    self.on_field_cards[idx] = (to_card_num, from_card_num)
 
     def set_highlight_visibility_all_cards(self, visibility=True):
         """
