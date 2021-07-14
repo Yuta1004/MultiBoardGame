@@ -69,11 +69,11 @@ def calc_score(collected_card):
         score += 10 + surplus
         roles.append((Role.Blue_Red_Slips, 10+surplus))
     elif check_enable_bit_nums(collected_card, 0x70) == 3:      # 赤短
-        surplus = check_enable_bit_nums(0x38f)
+        surplus = check_enable_bit_nums(collected_card, 0x38f)
         score += 5 + surplus
         roles.append((Role.RedSlips, 5+surplus))
     elif check_enable_bit_nums(collected_card, 0x380) == 3:     # 青短
-        surplus = check_enable_bit_nums(0x7f)
+        surplus = check_enable_bit_nums(collected_card, 0x7f)
         score += 5 + surplus
         roles.append((Role.BlueSlips, 5+surplus))
     elif check_enable_bit_nums(collected_card, 0x3ff) >= 5:     # タン
