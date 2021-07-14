@@ -67,6 +67,16 @@ class KoiKoi(GameBase):
         msg_box_img = msg_box_img.resize((640, 40))
         self.msg_box_img = ImageTk.PhotoImage(msg_box_img)
 
+        # こいこいボタン
+        koikoi_btn_img = Image.open(open("game/koikoi/resource/koikoi.png", "rb"))
+        koikoi_btn_img = koikoi_btn_img.resize((220, 90))
+        self.koikoi_btn_img = ImageTk.PhotoImage(koikoi_btn_img)
+
+        # 勝負ボタン
+        challenge_btn_img = Image.open(open("game/koikoi/resource/challenge.png", "rb"))
+        challenge_btn_img = challenge_btn_img.resize((220, 90))
+        self.challenge_btn_img = ImageTk.PhotoImage(challenge_btn_img)
+
     def setup_widgets(self):
         # キャンバス初期化
         self.canvas = tk.Canvas(self, width=1200, height=700, bg="white")
@@ -87,6 +97,10 @@ class KoiKoi(GameBase):
         # メッセージウィンドウ
         self.canvas.create_image(280, 0, image=self.msg_box_img, anchor=tk.NW)
         self.canvas.create_text(600, 20, text="", font=("Courier", 30), anchor=tk.CENTER, tags="msg_box")
+
+        # コントロールパネル
+        self.canvas.create_image(30, 450, image=self.koikoi_btn_img, anchor=tk.NW)
+        self.canvas.create_image(30, 550, image=self.challenge_btn_img, anchor=tk.NW)
 
     def update(self):
         # ゲーム開始処理
