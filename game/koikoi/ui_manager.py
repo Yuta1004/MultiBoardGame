@@ -94,7 +94,7 @@ class KoiKoiUIManager:
         ## Params
         - visibility : ハイライト効果を表示する場合True
         """
-        for card in self.cards:
+        for card in self.cards.values():
             card.set_highlight_visibility(False)
 
     def draw(self):
