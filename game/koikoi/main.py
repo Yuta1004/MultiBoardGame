@@ -20,7 +20,7 @@ class Phase(Enum):
     SELECT_MY_CARD = "Select your card"
     SELECT_FIELD_CARD_1 = "Select a card which is on field"
     PICK_FROM_DECK = "Picked a card from deck"
-    SELECT_FIELD_CARD_2 = "Select a card which is on field"
+    SELECT_FIELD_CARD_2 = "Select a card which is on field."
     CALC_SCORE = "Click to next"
     ASK_CONTINUE = "Select your action!!"
 
@@ -178,14 +178,25 @@ class KoiKoi(GameBase):
                 on_field_cards.append(picked_card_num)
                 self.ui_manager.replace_card_tmp_move(picked_card_num, None)
                 self.phase = Phase.CALC_SCORE
+                self.after(1500, lambda: self.card_clicked_event(1<<49))
             else:
+                self.bef_clicked_card_num = picked_card_num
                 self.phase = Phase.SELECT_FIELD_CARD_2
 
+        # 4. 場にある札のうち，3で選択した札と合札にする札を選択する - > 5に直接遷移
         elif self.phase == Phase.SELECT_FIELD_CARD_2:
+            if (clicked_card_num not in on_field_cards) or (clicked_card_month != get_card_month(self.bef_clicked_card_num)):
+                return
+            on_field_cards.remove(clicked_card_num)
+            my_collected_cards.extend([self.bef_clicked_card_num, clicked_card_num])
+            self.ui_manager.replace_card_tmp_move(self.bef_clicked_card_num, clicked_card_num)
+            self.ui_manager.set_highlight_visibility_all_cards(False)
             self.phase = Phase.CALC_SCORE
+            self.after(1500, lambda: self.card_clicked_event(1<<49))
 
         elif self.phase == Phase.CALC_SCORE:
-            self.phase = Phase.ASK_CONTINUE
+            # self.phase = Phase.ASK_CONTINUE
+            pass
 
         elif self.phase == Phase.ASK_CONTINUE:
             self.phase = Phase.WAITING
