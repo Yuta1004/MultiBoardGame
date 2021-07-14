@@ -144,10 +144,16 @@ class KoiKoi(GameBase):
         if (self.room_mgr.get_value("turn") == HOST and self.is_host()) or (self.room_mgr.get_value("turn") == CLIENT and not self.is_host()):
             if self.phase == Phase.WAITING:
                 self.phase = Phase.SELECT_MY_CARD
+                if len(self.room_mgr.get_value(self.my_cards_tag)) == 0:
+                    self.room_mgr.set_values(winner=-1, score=0, roles=[])
+                    self.room_mgr.sync()
+                    return
 
         # リザルト表示
         if self.room_mgr.get_value("winner") is not None:
             result_msg = "YOU LOSE"
+            if self.room_mgr.get_value("winner") == -1:
+                result_msg = "DRAW"
             if (self.is_host() and self.room_mgr.get_value("winner") == HOST) or (not self.is_host() and self.room_mgr.get_value("winner") == CLIENT):
                 result_msg = "YOU WIN!"
             self.canvas.itemconfigure("result", state=tk.NORMAL)
