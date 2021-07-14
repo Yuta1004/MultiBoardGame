@@ -77,6 +77,7 @@ class KoiKoiUIManager:
         - from_card_num : 移動する札の番号
         - to_card_num : 移動する札が向かう先の札の番号 (None指定可，この場合は場の空いている場所に移動)
         """
+        self.canvas.tag_raise("Card"+str(from_card_num))
         self.cards[from_card_num].set_front_visibility(True)
         if to_card_num is None:
             idx = self.viewing_card_nums[0] + 1
