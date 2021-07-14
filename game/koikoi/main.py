@@ -107,7 +107,7 @@ class KoiKoi(GameBase):
         # こいこいボタン
         self.canvas.create_image(30, 450, image=self.koikoi_btn_img, anchor=tk.NW, tags="koikoi_btn")
         self.canvas.itemconfigure("koikoi_btn", state=tk.HIDDEN)
-        self.canvas.tag_bind("koikoi_btn", "<Button-1>", lambda x: self.button_clicked_event("koikoli_btn"))
+        self.canvas.tag_bind("koikoi_btn", "<Button-1>", lambda x: self.button_clicked_event("koikoi_btn"))
 
         # 勝負ボタン
         self.canvas.create_image(30, 550, image=self.challenge_btn_img, anchor=tk.NW, tags="challenge_btn")
@@ -284,5 +284,7 @@ class KoiKoi(GameBase):
             self.room_mgr.set_values(winner=HOST if self.is_host() else CLIENT, score=score, roles=roles)
         elif tag == "koikoi_btn":
             self.room_mgr.set_values(turn=1-self.room_mgr.get_value("turn"))
+        self.canvas.itemconfigure("koikoi_btn", state=tk.HIDDEN)
+        self.canvas.itemconfigure("challenge_btn", state=tk.HIDDEN)
         self.phase = Phase.WAITING
         self.room_mgr.sync()
