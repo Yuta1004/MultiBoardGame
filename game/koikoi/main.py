@@ -231,10 +231,12 @@ class KoiKoi(GameBase):
                 self.roles_listbox.insert(tk.END, "{} : {}P".format(role.name, point))
             if (score, roles) != self.bef_score and len(roles) > 0:
                 self.phase = Phase.ASK_CONTINUE
+                self.canvas.itemconfigure("koikoi_btn", state=tk.NORMAL)
+                self.canvas.itemconfigure("challenge_btn", state=tk.NORMAL)
             else:
                 self.phase = Phase.WAITING
                 self.room_mgr.set_values(turn=1-self.room_mgr.get_value("turn"))
-                self.room_mgr.sync()
+            self.room_mgr.sync()
 
         # 6. こいこい または 勝負 が選択されるのを待機する (button_clicked_event)
         elif self.phase == Phase.ASK_CONTINUE:
