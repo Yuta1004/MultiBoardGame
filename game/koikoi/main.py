@@ -11,6 +11,11 @@ from game.koikoi.ui_manager import KoiKoiUIManager
 
 HOST = 0
 CLIENT = 1
+PH0_WAITING = 0
+PH1_SELECT_MY_CARD = 1
+PH2_PICK_FROM_DECK = 2
+PH3_CALC_SCORE = 3
+PH4_ASK_CONTINUE = 4
 
 
 class KoiKoi(GameBase):
@@ -27,6 +32,7 @@ class KoiKoi(GameBase):
             now_playing=False,
             turn=random.randint(0, 1)       # Host=>0, Client=>1
         )
+        self.phase = PH0_WAITING
 
     def load_resources(self):
         # 背景
@@ -85,6 +91,11 @@ class KoiKoi(GameBase):
                 self.room_mgr.set_values(now_playing=True, on_field_cards=on_field_cards, host_cards=host_cards, client_cards=client_cards, host_collected_cards=[], client_collected_cards=[], remain_cards=remain_cards)
                 self.room_mgr.sync()
 
+        # ターン交代
+        if (self.room_mgr.get_value("turn") == HOST and self.is_host()) or (self.room_mgr.get_value("turn") == CLIENT and not self.is_host()):
+            if self.phase == PH0_WAITING:
+                self.phase = PH1_SELECT_MY_CARD
+
         # 盤面同期
         self.ui_manager.replace_cards(
             self.room_mgr.get_value("on_field_cards"),
@@ -100,9 +111,16 @@ class KoiKoi(GameBase):
         msg = ""
         if self.room_mgr.get_value("now_playing"):
             if (self.room_mgr.get_value("turn") == HOST and self.is_host()) or (self.room_mgr.get_value("turn") == CLIENT and not self.is_host()):
-                msg = "Your Turn"
+                if self.phase == PH1_SELECT_MY_CARD:
+                    msg = "Select your card"
+                elif self.phase == PH2_PICK_FROM_DECK:
+                    msg = "Picked a card from deck"
+                elif self.phase == PH3_CALC_SCORE:
+                    msg = "Calculated your score"
+                elif self.phase == PH4_ASK_CONTINUE:
+                    msg = "Choose your action!"
             else:
-                msg = "Thinking..."
+                msg = "Please wait..."
         else:
             msg = "Player Waiting..."
         self.canvas.itemconfig("msg_box", text=msg)
@@ -113,4 +131,21 @@ class KoiKoi(GameBase):
             self.after(20, self.draw)
 
     def card_clicked_event(self, clicked_card_num):
-        print(clicked_card_num)
+        if self.phase == PH0_WAITING:
+            return
+
+        if self.phase == PH1_SELECT_MY_CARD:
+            self.phase = PH2_PICK_FROM_DECK
+
+        elif self.phase == PH2_PICK_FROM_DECK:
+            self.phase = PH3_CALC_SCORE
+
+        elif self.phase == PH3_CALC_SCORE:
+            self.phase = PH4_ASK_CONTINUE
+
+        elif self.phase == PH4_ASK_CONTINUE:
+            self.phase = PH0_WAITING
+            self.room_mgr.set_values(turn=1-self.room_mgr.get_value("turn"))
+            self.room_mgr.sync()
+
+        self.draw()
