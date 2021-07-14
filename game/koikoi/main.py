@@ -78,6 +78,11 @@ class KoiKoi(GameBase):
         challenge_btn_img = challenge_btn_img.resize((220, 90))
         self.challenge_btn_img = ImageTk.PhotoImage(challenge_btn_img)
 
+        # リザルト表示用額縁
+        result_img = Image.open(open("game/koikoi/resource/result.png", "rb"))
+        result_img = result_img.resize((400, 500))
+        self.result_img = ImageTk.PhotoImage(result_img)
+
     def setup_widgets(self):
         # キャンバス初期化
         self.canvas = tk.Canvas(self, width=1200, height=700, bg="white")
@@ -112,6 +117,15 @@ class KoiKoi(GameBase):
         # 出来役表示リスト
         self.roles_listbox = tk.Listbox(self, width=18, height=12, font=("Courier", 20))
         self.roles_listbox.place(x=1060, y=150, anchor=tk.CENTER)
+
+        # リザルト
+        self.canvas.create_image(600, 350, image=self.result_img, anchor=tk.CENTER, tags="result")
+        self.canvas.create_text(600, 190, text="You WIN", font=("Courier", 50), anchor=tk.CENTER, tags=("result", "result_msg"))
+        self.canvas.create_text(600, 230, text="xx points", font=("Courier", 30), anchor=tk.CENTER, tags=("result", "result_point_msg"))
+        self.canvas.itemconfigure("result", state=tk.HIDDEN)
+        self.result_roles_listbox = tk.Listbox(self, width=18, height=12, font=("Courier", 20))
+        self.result_roles_listbox.place(x=600, y=400, anchor=tk.CENTER)
+        self.result_roles_listbox.place_forget()
 
     def update(self):
         # ゲーム開始処理
