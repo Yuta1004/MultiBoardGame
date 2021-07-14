@@ -113,6 +113,7 @@ class Card:
         - x : 更新後の位置 (x成分)
         - y : 更新後の位置 (y成分)
         """
+        self.canvas.tag_raise("Card"+str(self.card_num))
         self.x = x
         self.y = y
         self.dx = (self.x - self.nx) / 30
@@ -134,6 +135,7 @@ class Card:
         ## Params
         - visibility : 表を表示する場合True
         """
+        self.canvas.tag_raise("Card"+str(self.card_num))
         self.canvas.itemconfigure("Card"+str(self.card_num)+"back", state=tk.HIDDEN if visibility else tk.NORMAL)
 
     def set_highlight_visibility(self, visibility=True):
@@ -143,4 +145,5 @@ class Card:
         ## Params
         - visibility : ハイライト効果を表示する場合True
         """
+        self.canvas.tag_raise("Card"+str(self.card_num))
         self.canvas.itemconfigure("Card"+str(self.card_num)+"highlight", state=tk.NORMAL if visibility else tk.HIDDEN)
