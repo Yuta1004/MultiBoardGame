@@ -48,12 +48,12 @@ def calc_score(collected_card):
         roles.append((Role.Sanko, 5))
 
     # 花見で一杯
-    if check_enable_bit_nums(collected_card, 0x11000000) == 2:
+    if check_enable_bit_nums(collected_card, 0x88000) == 2:
         score += 5
         roles.append((Role.HanamiDeIppai, 5))
 
     # 月見で一杯
-    if check_enable_bit_nums(collected_card, 0x21000000) == 2:
+    if check_enable_bit_nums(collected_card, 0x108000) == 2:
         score += 5
         roles.append((Role.TsukimiDeIppai, 5))
 
@@ -91,6 +91,8 @@ def calc_score(collected_card):
         surplus = check_enable_bit_nums(collected_card, 0xffffff008000)
         score += 1 + surplus - 10
         roles.append((Role.Kasu, 1+surplus-10))
+
+    return score, roles
 
 
 def check_enable_bit_nums(target, mask):
