@@ -140,9 +140,8 @@ class KoiKoi(GameBase):
                     cnt += 1
                     self.ui_manager.cards[on_field_card].set_highlight_visibility(True)
             if cnt == 0:
-                my_cards.remove(self.bef_clicked_card_num)
-                on_field_cards.remove(clicked_card_num)
-                my_collected_cards.extend([self.bef_clicked_card_num, clicked_card_num])
+                my_cards.remove(clicked_card_num)
+                on_field_cards.append(clicked_card_num)
                 self.ui_manager.replace_card_tmp_move(clicked_card_num, None)
                 self.phase = Phase.PICK_FROM_DECK
             else:
