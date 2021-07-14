@@ -10,6 +10,7 @@ from PIL import Image, ImageTk, ImageEnhance
 from game.base import GameBase
 from game.koikoi.ui_manager import KoiKoiUIManager
 from game.koikoi.card.judge import get_card_month
+from game.koikoi.card.calc import calc_score
 
 HOST = 0
 CLIENT = 1
@@ -21,7 +22,7 @@ class Phase(Enum):
     SELECT_FIELD_CARD_1 = "Select a card which is on field"
     PICK_FROM_DECK = "Picked a card from deck"
     SELECT_FIELD_CARD_2 = "Select a card which is on field."
-    CALC_SCORE = "Click to next"
+    CALC_SCORE = "Calculating your score..."
     ASK_CONTINUE = "Select your action!!"
 
 
@@ -194,7 +195,12 @@ class KoiKoi(GameBase):
             self.phase = Phase.CALC_SCORE
             self.after(1500, lambda: self.card_clicked_event(1<<49))
 
+        # 5. 得点計算を行う - > 役が新しく完成した時6へ遷移，そうでないとき次ターンへ遷移
         elif self.phase == Phase.CALC_SCORE:
+            collected_card_info = 0
+            for card in my_collected_cards:
+                collected_card_info |= card
+            print(calc_score(collected_card_info))
             self.phase = Phase.ASK_CONTINUE
 
         elif self.phase == Phase.ASK_CONTINUE:
