@@ -146,7 +146,7 @@ class KoiKoi(GameBase):
                 on_field_cards.append(clicked_card_num)
                 self.ui_manager.replace_card_tmp_move(clicked_card_num, None)
                 self.phase = Phase.PICK_FROM_DECK
-                self.after(2000, lambda: self.card_clicked_event(1<<49))
+                self.after(1500, lambda: self.card_clicked_event(1<<49))
             else:
                 self.bef_clicked_card_num = clicked_card_num
                 self.phase = Phase.SELECT_FIELD_CARD_1
@@ -161,7 +161,7 @@ class KoiKoi(GameBase):
             self.ui_manager.replace_card_tmp_move(self.bef_clicked_card_num, clicked_card_num)
             self.ui_manager.set_highlight_visibility_all_cards(False)
             self.phase = Phase.PICK_FROM_DECK
-            self.after(2000, lambda: self.card_clicked_event(1<<49))
+            self.after(1500, lambda: self.card_clicked_event(1<<49))
 
         # 3. 山札から1枚選択する - > 4または5へ遷移
         elif self.phase == Phase.PICK_FROM_DECK:
