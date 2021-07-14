@@ -83,7 +83,8 @@ class KoiKoiUIManager:
             h_size = (idx+1) // 2
             self.cards[from_card_num].update_pos(470+(idx%h_size)*70, 350+(-1 if idx//h_size == 0 else 1)*60)
         else:
-            self.cards[from_card_num].update_pos(*self.cards[to_card_num].get_pos())
+            (x, y) = self.cards[to_card_num].get_pos()
+            self.cards[from_card_num].update_pos(x+5, y+5)
 
     def set_highlight_visibility_all_cards(self, visibility=True):
         """
