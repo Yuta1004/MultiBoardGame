@@ -140,15 +140,6 @@ class KoiKoi(GameBase):
                 self.room_mgr.set_values(now_playing=True, on_field_cards=on_field_cards, host_cards=host_cards, client_cards=client_cards, host_collected_cards=[], client_collected_cards=[], remain_cards=remain_cards)
                 self.room_mgr.sync()
 
-        # ターン交代
-        if (self.room_mgr.get_value("turn") == HOST and self.is_host()) or (self.room_mgr.get_value("turn") == CLIENT and not self.is_host()):
-            if self.phase == Phase.WAITING:
-                self.phase = Phase.SELECT_MY_CARD
-                if len(self.room_mgr.get_value(self.my_cards_tag)) == 0:
-                    self.room_mgr.set_values(winner=-1, score=0, roles=[])
-                    self.room_mgr.sync()
-                    return
-
         # リザルト表示
         if self.room_mgr.get_value("winner") is not None:
             result_msg = "YOU LOSE"
@@ -165,6 +156,15 @@ class KoiKoi(GameBase):
                 self.result_roles_listbox.insert(tk.END, "{} : {} P".format(role_info[0], role_info[1]))
             self.result_roles_listbox.place(x=600, y=400, anchor=tk.CENTER)
             return
+
+        # ターン交代
+        if (self.room_mgr.get_value("turn") == HOST and self.is_host()) or (self.room_mgr.get_value("turn") == CLIENT and not self.is_host()):
+            if self.phase == Phase.WAITING:
+                self.phase = Phase.SELECT_MY_CARD
+                if len(self.room_mgr.get_value(self.my_cards_tag)) == 0:
+                    self.room_mgr.set_values(winner=-1, score=0, roles=[])
+                    self.room_mgr.sync()
+                    return
 
         # 盤面同期
         self.ui_manager.replace_cards(
