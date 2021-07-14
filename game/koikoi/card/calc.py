@@ -67,10 +67,6 @@ def calc_score(collected_card):
         surplus = check_enable_bit_nums(collected_card, 0xf)
         score += 10 + surplus
         roles.append((Role.AkatanAndAotan, 10+surplus))
-    elif check_enable_bit_nums(collected_card, 0x3ff) >= 5:     # タン
-        surplus = check_enable_bit_nums(collected_card, 0x3ff)
-        score += 1 + surplus - 5
-        roles.append((Role.Tan, 1+surplus-5))
     elif check_enable_bit_nums(collected_card, 0x70) == 3:      # 赤短
         surplus = check_enable_bit_nums(0x38f)
         score += 5 + surplus
@@ -79,6 +75,10 @@ def calc_score(collected_card):
         surplus = check_enable_bit_nums(0x7f)
         score += 5 + surplus
         roles.append((Role.Aotan, 5+surplus))
+    elif check_enable_bit_nums(collected_card, 0x3ff) >= 5:     # タン
+        surplus = check_enable_bit_nums(collected_card, 0x3ff)
+        score += 1 + surplus - 5
+        roles.append((Role.Tan, 1+surplus-5))
 
     # タネ
     if check_enable_bit_nums(collected_card, 0x7fc00) > 5:
