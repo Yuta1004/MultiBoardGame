@@ -39,6 +39,7 @@ class KoiKoi(GameBase):
             now_playing=False,
             turn=random.randint(0, 1)       # Host=>0, Client=>1
         )
+        self.bef_clicked_card_num = None
         self.my_cards_tag = "host_cards" if self.is_host() else "client_cards"
         self.my_collected_cards_tag = "host_collected_cards" if self.is_host() else "client_collected_cards"
 
@@ -144,6 +145,7 @@ class KoiKoi(GameBase):
                 self.ui_manager.replace_card_tmp_move(clicked_card_num, None)
                 self.phase = Phase.PICK_FROM_DECK
             else:
+                self.bef_clicked_card_num = clicked_card_num
                 self.phase = Phase.SELECT_FIELD_CARD_1
 
         elif self.phase == Phase.SELECT_FIELD_CARD_1:
