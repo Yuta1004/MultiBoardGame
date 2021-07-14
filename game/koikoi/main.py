@@ -124,7 +124,6 @@ class KoiKoi(GameBase):
         self.canvas.create_text(600, 230, text="xx points", font=("Courier", 30), anchor=tk.CENTER, tags=("result", "result_point_msg"))
         self.canvas.itemconfigure("result", state=tk.HIDDEN)
         self.result_roles_listbox = tk.Listbox(self, width=18, height=12, font=("Courier", 20))
-        self.result_roles_listbox.place(x=600, y=400, anchor=tk.CENTER)
         self.result_roles_listbox.place_forget()
 
     def update(self):
@@ -145,6 +144,21 @@ class KoiKoi(GameBase):
         if (self.room_mgr.get_value("turn") == HOST and self.is_host()) or (self.room_mgr.get_value("turn") == CLIENT and not self.is_host()):
             if self.phase == Phase.WAITING:
                 self.phase = Phase.SELECT_MY_CARD
+
+        # リザルト表示
+        if self.room_mgr.get_value("winner") is not None:
+            result_msg = "YOU LOSE"
+            if (self.is_host() and self.room_mgr.get_value("winner") == HOST) or (not self.is_host() and self.room_mgr.get_value("winner") == CLIENT):
+                result_msg = "YOU WIN!"
+            self.canvas.itemconfigure("result", state=tk.NORMAL)
+            self.canvas.itemconfigure("result_msg", text=result_msg)
+            self.canvas.itemconfigure("result_point_msg", text="{} P".format(self.room_mgr.get_value("score")))
+            self.canvas.tag_raise("result")
+            self.result_roles_listbox.delete(0, tk.END)
+            for role_info in self.room_mgr.get_value("roles"):
+                self.result_roles_listbox.insert(tk.END, "{} : {} P".format(role_info[0], role_info[1]))
+            self.result_roles_listbox.place(x=600, y=400, anchor=tk.CENTER)
+            return
 
         # 盤面同期
         self.ui_manager.replace_cards(
@@ -245,6 +259,7 @@ class KoiKoi(GameBase):
                 self.roles_listbox.insert(tk.END, "{} : {}P".format(role.name, point))
             if (score, roles) != self.bef_score and len(roles) > 0:
                 self.phase = Phase.ASK_CONTINUE
+                self.bef_score = (score, roles)
                 self.canvas.itemconfigure("koikoi_btn", state=tk.NORMAL)
                 self.canvas.itemconfigure("challenge_btn", state=tk.NORMAL)
             else:
@@ -263,4 +278,11 @@ class KoiKoi(GameBase):
         self.draw()
 
     def button_clicked_event(self, tag):
-        print(tag)
+        if tag == "challenge_btn":
+            (score, roles) = self.bef_score
+            roles = [[role.name, point] for (role, point) in roles]
+            self.room_mgr.set_values(winner=HOST if self.is_host() else CLIENT, score=score, roles=roles)
+        elif tag == "koikoi_btn":
+            self.room_mgr.set_values(turn=1-self.room_mgr.get_value("turn"))
+        self.phase = Phase.WAITING
+        self.room_mgr.sync()
