@@ -81,7 +81,7 @@ class KoiKoiUIManager:
         if to_card_num is None:
             idx = self.viewing_card_nums[0] + 1
             h_size = (idx+1) // 2
-            self.cards[from_card_num].update_pos(470+(idx%h_size)*70, 350+(-1 if idx//h_size == 0 else 1)*60)
+            self.cards[from_card_num].update_pos(470+(idx%h_size)*80, 350+(-1 if idx//h_size == 0 else 1)*65)
         else:
             (x, y) = self.cards[to_card_num].get_pos()
             self.cards[from_card_num].update_pos(x+10, y+8)
