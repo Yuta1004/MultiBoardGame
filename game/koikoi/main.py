@@ -20,7 +20,8 @@ class Phase(Enum):
     SELECT_MY_CARD = "Select your card"
     SELECT_FIELD_CARD_1 = "Select a card which is on field"
     PICK_FROM_DECK = "Picked a card from deck"
-    CALC_SCORE = "Calculated your score"
+    SELECT_FIELD_CARD_2 = "Select a card which is on field"
+    CALC_SCORE = "Click to next"
     ASK_CONTINUE = "Select your action!!"
 
 
@@ -129,6 +130,7 @@ class KoiKoi(GameBase):
         my_cards = copy.deepcopy(self.room_mgr.get_value(self.my_cards_tag))
         my_collected_cards = copy.deepcopy(self.room_mgr.get_value(self.my_collected_cards_tag))
         on_field_cards = copy.deepcopy(self.room_mgr.get_value("on_field_cards"))
+        remain_cards = copy.deepcopy(self.room_mgr.get_value("remain_cards"))
 
         # 1. 持札から1枚選択する - > 2または3に遷移
         if self.phase == Phase.SELECT_MY_CARD:
@@ -144,6 +146,7 @@ class KoiKoi(GameBase):
                 on_field_cards.append(clicked_card_num)
                 self.ui_manager.replace_card_tmp_move(clicked_card_num, None)
                 self.phase = Phase.PICK_FROM_DECK
+                self.after(2000, lambda: self.card_clicked_event(1<<49))
             else:
                 self.bef_clicked_card_num = clicked_card_num
                 self.phase = Phase.SELECT_FIELD_CARD_1
@@ -158,8 +161,27 @@ class KoiKoi(GameBase):
             self.ui_manager.replace_card_tmp_move(self.bef_clicked_card_num, clicked_card_num)
             self.ui_manager.set_highlight_visibility_all_cards(False)
             self.phase = Phase.PICK_FROM_DECK
+            self.after(2000, lambda: self.card_clicked_event(1<<49))
 
+        # 3. 山札から1枚選択する - > 4または5へ遷移
         elif self.phase == Phase.PICK_FROM_DECK:
+            picked_card_num = remain_cards[0]
+            picked_card_month = get_card_month(picked_card_num)
+            remain_cards.remove(picked_card_num)
+            self.ui_manager.cards[picked_card_num].set_front_visibility(True)
+            cnt = 0
+            for on_field_card in on_field_cards:
+                if get_card_month(on_field_card) == picked_card_month:
+                    cnt += 1
+                    self.ui_manager.cards[on_field_card].set_highlight_visibility(True)
+            if cnt == 0:
+                on_field_cards.append(picked_card_num)
+                self.ui_manager.replace_card_tmp_move(picked_card_num, None)
+                self.phase = Phase.CALC_SCORE
+            else:
+                self.phase = Phase.SELECT_FIELD_CARD_2
+
+        elif self.phase == Phase.SELECT_FIELD_CARD_2:
             self.phase = Phase.CALC_SCORE
 
         elif self.phase == Phase.CALC_SCORE:
