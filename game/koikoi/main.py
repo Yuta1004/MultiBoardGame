@@ -130,7 +130,7 @@ class KoiKoi(GameBase):
         my_collected_cards = copy.deepcopy(self.room_mgr.get_value(self.my_collected_cards_tag))
         on_field_cards = copy.deepcopy(self.room_mgr.get_value("on_field_cards"))
 
-        # 1. 持札から1枚選択する - > 2または3に分岐
+        # 1. 持札から1枚選択する - > 2または3に遷移
         if self.phase == Phase.SELECT_MY_CARD:
             if clicked_card_num not in my_cards:
                 return
@@ -148,7 +148,7 @@ class KoiKoi(GameBase):
                 self.bef_clicked_card_num = clicked_card_num
                 self.phase = Phase.SELECT_FIELD_CARD_1
 
-        # 2. 場にある札のうち，1で選択した札と合札にする札を選択する
+        # 2. 場にある札のうち，1で選択した札と合札にする札を選択する   > 3へ直接遷移
         elif self.phase == Phase.SELECT_FIELD_CARD_1:
             if (clicked_card_num not in on_field_cards) or (clicked_card_month != get_card_month(self.bef_clicked_card_num)):
                 return
