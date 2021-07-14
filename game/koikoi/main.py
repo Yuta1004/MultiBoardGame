@@ -41,6 +41,7 @@ class KoiKoi(GameBase):
             now_playing=False,
             turn=random.randint(0, 1)       # Host=>0, Client=>1
         )
+        self.bef_score = (0, [])
         self.bef_clicked_card_num = None
         self.my_cards_tag = "host_cards" if self.is_host() else "client_cards"
         self.my_collected_cards_tag = "host_collected_cards" if self.is_host() else "client_collected_cards"
@@ -98,9 +99,15 @@ class KoiKoi(GameBase):
         self.canvas.create_image(280, 0, image=self.msg_box_img, anchor=tk.NW)
         self.canvas.create_text(600, 20, text="", font=("Courier", 30), anchor=tk.CENTER, tags="msg_box")
 
-        # コントロールパネル
-        self.canvas.create_image(30, 450, image=self.koikoi_btn_img, anchor=tk.NW)
-        self.canvas.create_image(30, 550, image=self.challenge_btn_img, anchor=tk.NW)
+        # こいこいボタン
+        self.canvas.create_image(30, 450, image=self.koikoi_btn_img, anchor=tk.NW, tags="koikoi_btn")
+        self.canvas.itemconfigure("koikoi_btn", state=tk.HIDDEN)
+        self.canvas.tag_bind("koikoi_btn", "<Button-1>", lambda x: self.button_clicked_event("koikoli_btn"))
+
+        # 勝負ボタン
+        self.canvas.create_image(30, 550, image=self.challenge_btn_img, anchor=tk.NW, tags="challenge_btn")
+        self.canvas.itemconfigure("challenge_btn", state=tk.HIDDEN)
+        self.canvas.tag_bind("challenge_btn", "<Button-1>", lambda x: self.button_clicked_event("challenge_btn"))
 
         # 出来役表示リスト
         self.roles_listbox = tk.Listbox(self, width=18, height=12, font=("Courier", 20))
@@ -218,19 +225,26 @@ class KoiKoi(GameBase):
             collected_card_info = 0
             for card in my_collected_cards:
                 collected_card_info |= card
-            _, roles = calc_score(collected_card_info)
+            score, roles = calc_score(collected_card_info)
             self.roles_listbox.delete(0, tk.END)
             for (role, point) in roles:
                 self.roles_listbox.insert(tk.END, "{} : {}P".format(role.name, point))
-            self.phase = Phase.ASK_CONTINUE
+            if (score, roles) != self.bef_score and len(roles) > 0:
+                self.phase = Phase.ASK_CONTINUE
+            else:
+                self.phase = Phase.WAITING
+                self.room_mgr.set_values(turn=1-self.room_mgr.get_value("turn"))
+                self.room_mgr.sync()
 
+        # 6. こいこい または 勝負 が選択されるのを待機する (button_clicked_event)
         elif self.phase == Phase.ASK_CONTINUE:
-            self.phase = Phase.WAITING
-            self.room_mgr.set_values(turn=1-self.room_mgr.get_value("turn"))
-            self.room_mgr.sync()
+            return
 
         if self.is_host():
             self.room_mgr.set_values(on_field_cards=on_field_cards, host_cards=my_cards, host_collected_cards=my_collected_cards, remain_cards=remain_cards)
         else:
             self.room_mgr.set_values(on_field_cards=on_field_cards, client_cards=my_cards, client_collected_cards=my_collected_cards, remain_cards=remain_cards)
         self.draw()
+
+    def button_clicked_event(self, tag):
+        print(tag)
