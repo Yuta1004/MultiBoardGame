@@ -167,13 +167,14 @@ class KoiKoi(GameBase):
                     return
 
         # 盤面同期
-        self.ui_manager.replace_cards(
-            self.room_mgr.get_value("on_field_cards"),
-            self.room_mgr.get_value("host_cards" if self.is_host() else "client_cards"),
-            self.room_mgr.get_value("client_cards" if self.is_host() else "host_cards"),
-            self.room_mgr.get_value("host_collected_cards" if self.is_host() else "client_collected_cards"),
-            self.room_mgr.get_value("client_collected_cards" if self.is_host() else "host_collected_cards")
-        )
+        if self.ui_manager is not None:
+            self.ui_manager.replace_cards(
+                self.room_mgr.get_value("on_field_cards"),
+                self.room_mgr.get_value("host_cards" if self.is_host() else "client_cards"),
+                self.room_mgr.get_value("client_cards" if self.is_host() else "host_cards"),
+                self.room_mgr.get_value("host_collected_cards" if self.is_host() else "client_collected_cards"),
+                self.room_mgr.get_value("client_collected_cards" if self.is_host() else "host_collected_cards")
+            )
         self.draw()
 
     def draw(self):
